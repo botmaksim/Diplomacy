@@ -1,18 +1,25 @@
-apply plugin: 'com.android.application'
+plugins {
+    id 'com.android.application'
+}
 
 android {
-    namespace "com.diplomacy"
-    compileSdk 34
+    namespace = "com.diplomacy" 
+    compileSdk = 35
 
     defaultConfig {
-        applicationId "com.diplomacy"
-        minSdk 24
-        targetSdk 34
-        versionCode 1
-        versionName "1.0"
+        applicationId = "com.diplomacy"
+        minSdk = 24
+        targetSdk = 35
+        versionCode = 1
+        versionName = "1.0"
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_21
+        targetCompatibility JavaVersion.VERSION_21
     }
 }
 
 dependencies {
-    implementation project(':core') // Подключаем тот же общий код
+    implementation project(':core')
 }

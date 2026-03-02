@@ -1,0 +1,15 @@
+plugins {
+    id 'application'
+}
+
+application {
+    mainClass = 'com.diplomacy.DesktopLauncher'
+}
+
+dependencies {
+    implementation project(':core')
+}
+
+run {
+    standardInput = System.in
+}
