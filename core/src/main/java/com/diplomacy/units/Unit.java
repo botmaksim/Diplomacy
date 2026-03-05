@@ -1,0 +1,32 @@
+package com.diplomacy.units;
+
+import com.diplomacy.geography.basic.Location;
+import com.diplomacy.player.Player;
+
+public abstract class Unit {
+
+    private final Player owner;
+    private Location location;
+
+    public Unit(Player owner, Location location) {
+        this.owner = owner;
+        this.location = location;
+    }
+
+    public Player getOwner() {
+        return owner;
+    }
+
+    public void setLocation(Location location) {
+        this.location = location;
+    }
+
+    public Location getLocation() {
+        return location;
+    }
+
+    public boolean CanMoveTo(Location target) {
+        return location.getNeighbours().contains(target);
+    }
+
+}
