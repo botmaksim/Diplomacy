@@ -1,20 +1,17 @@
 package com.diplomacy.player;
 
 import java.util.ArrayList;
-
 import java.util.List;
 
-import com.diplomacy.units.Unit;
-
-import com.diplomacy.geography.basic.Province;
-
 import com.diplomacy.geography.advanced.Country;
+import com.diplomacy.geography.basic.Province;
+import com.diplomacy.units.Unit;
 
 public class Player {
 
     private final Country country;
 
-    private final String password;
+    private final Password password;
 
     private List<Unit> units;
 
@@ -22,10 +19,9 @@ public class Player {
 
     private boolean ordersSubmitted;
 
-    public Player(Country country, String password) {
+    public Player(Country country, Password password) {
 
         this.country = country;
-
         this.password = password;
 
         this.units = getInitialUnits(country);
@@ -34,7 +30,7 @@ public class Player {
 
     }
 
-    public Player(Country country, String password, List<Unit> units, List<Province> supplyCenters) {
+    public Player(Country country, Password password, List<Unit> units, List<Province> supplyCenters) {
 
         this.country = country;
 
@@ -88,9 +84,9 @@ public class Player {
 
     }
 
-    public boolean tryLogin(String p) {
+    public boolean tryLogin(Password p) {
 
-        return p.equals(password);
+        return p.check(password);
 
     }
 
