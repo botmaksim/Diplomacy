@@ -1,0 +1,18 @@
+package com.diplomacy.geography.advanced;
+
+import java.util.List;
+
+import com.diplomacy.geography.basic.Province;
+
+public class Map extends Region {
+
+    public Map(List<Province> provinces) {
+        super(provinces);
+    }
+
+    public void resetBattleFlags() {
+        for (Province current : getProvinces()) {
+            current.setBattled(false);
+        }
+    }
+}
