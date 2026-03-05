@@ -1,8 +1,8 @@
-package com.diplomacy.orders.movementPhaseOrders;
+package com.diplomacy.orders;
 
 import com.diplomacy.units.Unit;
 
-public abstract class MovementPhaseOrder {
+public abstract class MovementPhaseOrder extends Order {
 
     private final Unit executor;
 
