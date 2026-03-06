@@ -6,6 +6,10 @@ skinparam linetype ortho
 
 package "game"{
 
+    class CoreMain {
+        + startGame(): void
+    }
+
     package "geography" {
         enum ProvinceType {
             LAND
@@ -13,43 +17,78 @@ package "game"{
             COASTAL
         }
 
+        class ProvinceSignature {
+            - name: String
+            - SupplyCenter: boolean
+            - type: ProvinceType
+            + ProvinceSignature(name: String, SupplyCenter: boolean, type: ProvinceType)
+            + getName(): String
+            + isSupplyCenter(): boolean
+            + getType(): ProvinceType
+        }
+
+        class ResolveParameters {
+            - Battled: boolean
+            + ResolveParameters()
+            + isBattled(): boolean
+            + setBattled(Battled: boolean): void
+            + clear(): void
+        }
+
         class Location {
-            - parrentProvince: Province
             - neighbours: List<Location>
+            - parentProvince: Province
+            + Location(parentProvince: Province)
+            + addNeighbour(neighbour: Location): void
             + getNeighbours(): List<Location>
-            + getParrent(): Province
+            + getParentProvince(): Province
+            + isArmyLocation(): boolean
         }
 
         class Province {
-            - name: String
-            - type: ProvinceType
-            - isSupplyCenter: boolean
-            - isBattled: boolean
-            - occupyingUnit: Unit
+            - signature: ProvinceSignature
             - locations: List<Location>
-            + getProvinceType(): ProvinceType
+            - resolveParameters: ResolveParameters
+            - occupyingUnit: Unit
+            + Province(signature: ProvinceSignature, locations: List<Location>)
+            + Province(signature: ProvinceSignature, locations: List<Location>, resolveParameters: ResolveParameters)
+            + Province(signature: ProvinceSignature, locations: List<Location>, occupyingUnit: Unit)
+            + Province(signature: ProvinceSignature, locations: List<Location>, resolveParameters: ResolveParameters, occupyingUnit: Unit)
+            + getName(): String
+            + getType(): ProvinceType
+            + isSupplyCenter(): boolean
             + getLocations(): List<Location>
-            + resetBattled(): void
-            + occupie(u: Unit): void
-            + disoccupie(): void
+            + getOccupyingUnit(): Unit
+            + setOccupyingUnit(occupyingUnit: Unit): void
+            + release(): void
             + isOccupied(): boolean
+            + getSignature(): ProvinceSignature
+            + getResolveParameters(): ResolveParameters
+            + isBattled(): boolean
+            + setBattled(battled: boolean): void
         }
 
-        abstract class Region {
+        class Region {
             - provinces: List<Province>
+            + Region(provinces: List<Province>)
             + getProvinces(): List<Province>
         }
 
         class Map extends Region {
-            + resetBattledFlags(): void
+            + Map(provinces: List<Province>)
+            + resetBattleFlags(): void
         }
 
         class Country extends Region {
             - name: String
+            + Country(name: String, provinces: List<Province>)
+            + resetBattleFlags(): void
             + getName(): String
         }
 
         Province "1" *--> "0..*" Location : contains
+        Province "1" *-- "1" ProvinceSignature : uses
+        Province "1" *-- "1" ResolveParameters : uses
     }
 
     package "player" {
@@ -62,12 +101,12 @@ package "game"{
 
         class Player {
             - country: Country
+            - password: Password
             - units: List<Unit>
             - supplyCenters: List<Province>
-            - password: Password
             - ordersSubmitted: boolean
             + Player(country: Country, password: Password)
-            + Player(country: Country, password: String, units: List<Unit>, supplyCenters: List<Province>)
+            + Player(country: Country, password: Password, units: List<Unit>, supplyCenters: List<Province>)
             + getCountry(): Country
             + getUnits(): List<Unit>
             + setUnits(units: List<Unit>): void
@@ -83,30 +122,64 @@ package "game"{
     }
 
     package "units" {
-        enum UnitType {
-            ARMY
-            FLEET
+        package "utils" {
+            class ConvoyHelper {
+                + CanConvoy(current: Location, end: Location, target: Unit): boolean
+                + getListOfReachableByConvoyLocations(location: Location): List<Location>
+                - doesPathExists(start: Location, targets: List<Location>): boolean
+                - bfsFindAll(start: List<Location>): List<Location>
+                - bfs(queue: Queue<Location>, visited: Set<Location>): Set<Location>
+                - getFleetLocations(location: Location): List<Location>
+                - getArmyLocation(location: Location): Location
+                - locationToList(location: Location): List<Location>
+            }
         }
 
-        class Unit {
+        abstract class Unit {
             - owner: Player
             - location: Location
-            - type: UnitType
-            + CanMoveTo(target: Location): boolean
-            + getLocation(): Location
+            + Unit(owner: Player, location: Location)
             + getOwner(): Player
+            + setLocation(location: Location): void
+            + getLocation(): Location
+            + CanMoveTo(target: Location): boolean
         }
 
         class Army extends Unit {
-            + CanConvoyTo(target: Location): boolean
-            + GetListOfReachableByConvoyLocations(): List<Location>
+            + Army(owner: Player, location: Location)
+            + canConvoyToFiltred(target: Location): boolean
+            + getListOfReachableByConvoyLocationsFiltred(): List<Location>
+            + canConvoyTo(target: Location): boolean
+            + getListOfReachableByConvoyLocations(): List<Location>
         }
 
         class Fleet extends Unit {
+            + Fleet(owner: Player, location: Location)
+            + canConvoy(destination: Location, armyToConvoy: Army): boolean
         }
     }
 
     package "orders" {
+        enum verificationResult {
+            OK
+            WRONG_PHASE
+            WRONG_ORDER_TYPE
+            SELECTED_PROVINCE_NOT_OCCUPIED
+            UNIT_NOT_OWNED_BY_PLAYER
+            DESTINATION_NOT_SET
+            ADDITIONAL_UNIT_NOT_SET
+            DESTINATION_NOT_REACHABLE
+            CANNOT_SUPPORT_HERE
+            MUST_BE_ARMY
+            MUST_BE_FLEET
+            FLEET_MUST_BE_IN_WATER
+            CANNOT_SUPPORT_SELF
+            PROVINCE_ALREADY_OCCUPIED
+            NOT_A_SUPPLY_CENTER
+            NOT_HOME_PROVINCE
+            UNABLE_TO_SPAWN
+        }
+
         abstract class Order {
             - executable: boolean
             + Order()
@@ -115,7 +188,8 @@ package "game"{
         }
 
         abstract class MovementPhaseOrder extends Order {
-            # executor: Unit
+            - executor: Unit
+            + MovementPhaseOrder(executor: Unit)
             + getExecutor(): Unit
         }
 
@@ -124,41 +198,49 @@ package "game"{
         }
 
         abstract class RetreatPhaseOrder extends Order {
-            # unitToRetreat: Unit 
+            - unitToRetreat: Unit 
+            + RetreatPhaseOrder(unitToRetreat: Unit)
             + getUnitToRetreat(): Unit
         }
 
         class RetreatOrder extends RetreatPhaseOrder {
             - destination: Location
+            + RetreatOrder(destination: Location, unitToRetreat: Unit)
             + getDestination(): Location
         }
 
         class DieOrder extends RetreatPhaseOrder {
+            + DieOrder(unitToRetreat: Unit)
         }
 
         class SpawnOrder extends SpawnPhaseOrder {
             - destination: Location
             - player: Player
+            + SpawnOrder(destination: Location, player: Player)
             + getDestination(): Location
             + getPlayer(): Player
         }
 
         class HoldOrder extends MovementPhaseOrder {
+            + HoldOrder(executor: Unit)
         }
 
         class DismissOrder extends SpawnPhaseOrder {
             - unitToDismiss: Unit
+            + DismissOrder(unitToDismiss: Unit)
             + getUnitToDismiss(): Unit
         }
 
         class MoveOrder extends MovementPhaseOrder {
             - destination: Location
+            + MoveOrder(destination: Location, executor: Unit)
             + getDestination(): Location
         }
 
         class SupportOrder extends MovementPhaseOrder {
             - supportedUnit: Unit
             - destination: Location
+            + SupportOrder(supportedUnit: Unit, destination: Location, executor: Unit)
             + getSupportedUnit(): Unit
             + getDestination(): Location
         }
@@ -166,43 +248,90 @@ package "game"{
         class ConvoyOrder extends MovementPhaseOrder {
             - convoyedArmy: Unit
             - destination: Location
+            + ConvoyOrder(convoyedArmy: Unit, destination: Location, executor: Unit)
             + getConvoyedArmy(): Unit
             + getDestination(): Location
         }
 
-        class OrderPrototype {
-            - selectedUnit: Unit
-            - orderType: OrderType
+        class BeConvoyedOrder extends MovementPhaseOrder {
             - destination: Location
-            + isCompleted(): boolean
-            + setUnit(): void
-            + setDestination(): void
-            + setOrderType(): void
-            + isSetUnit(): boolean
+            + BeConvoyedOrder(destination: Location, executor: Unit)
+            + getDestination(): Location
+        }
+
+        class OrderPrototype {
+            - orderType: OrderType
+            - selectedLocation: Location
+            - destination: Province
+            - ArmyToConvoy: Unit
+            - player: Player
+            + OrderPrototype()
+            + setDestination(destination: Province): void
+            + setOrderType(orderType: OrderType): void
+            + setSelectedLocation(selectedLocation: Location): void
+            + setPlayer(player: Player): void
+            + setArmyToConvoy(ArmyToConvoy: Unit): void
+            + getSelectedLocation(): Location
+            + getDestination(): Province
+            + getOrderType(): OrderType
+            + getPlayer(): Player
+            + getArmyToConvoy(): Unit
             + isSetDestination(): boolean
+            + isSetSelectedLocation(): boolean
             + isSetOrderType(): boolean
-            + clearOrderTypeSaved(): void
-            + clearOrderTypeToHold(): void
+            + isSetPlayer(): boolean
+            + isSetArmyToConvoy(): boolean
+            + Clear(): void
         }
 
         class OrderCreator {
-            + verifyOrder(orderPrototype: OrderPrototype, phaseType: PhaseType, player: Player): boolean
+            + verifyOrder(prototype: OrderPrototype, phaseType: PhaseType): verificationResult
+            + createOrder(prototype: OrderPrototype, phaseType: PhaseType): Order
+            - checkMovementPhase(prototype: OrderPrototype): verificationResult
+            - checkRetreatPhase(prototype: OrderPrototype): verificationResult
+            - checkSpawnPhase(prototype: OrderPrototype): verificationResult
+            - checkMove(prototype: OrderPrototype): verificationResult
+            - checkSupport(prototype: OrderPrototype): verificationResult
+            - checkConvoy(prototype: OrderPrototype): verificationResult
+            - checkBeConvoyed(prototype: OrderPrototype): verificationResult
+            - checkRetreat(prototype: OrderPrototype): verificationResult
+            - checkSpawn(prototype: OrderPrototype): verificationResult
+            - createMovementPhase(prototype: OrderPrototype): MovementPhaseOrder
+            - createRetreatPhase(prototype: OrderPrototype): RetreatPhaseOrder
+            - createSpawnPhase(prototype: OrderPrototype): SpawnPhaseOrder
+            - validateOwnership(prototype: OrderPrototype): verificationResult
+            - spawnAbleCheck(player: Player, location: Location): boolean
+            - getProvinceLocation(locations: List<Location>, province: Province): Location
         }
 
         OrderCreator ..> Order : creates
         OrderPrototype --> OrderCreator : used by
     }
 
-    package "engine" {
-        enum Season {
-            SPRING
-            FALL
-        }
-
+    package "utils" {
         enum PhaseType {
             MOVEMENT
             RETREAT
             SPAWN
+        }
+
+        enum OrderType {
+            MOVE
+            HOLD
+            SUPPORT
+            CONVOY
+            BECONVOYED
+            RETREAT
+            SPAWN
+            DISMISS
+            DIE
+        }
+    }
+
+    package "engine" {
+        enum Season {
+            SPRING
+            FALL
         }
 
         class TurnClassificator{
@@ -300,17 +429,6 @@ package "game"{
     }
 
     package "control TO DO NAHUI" {
-        enum OrderType{
-            MOVE
-            HOLD
-            SUPPORT
-            CONVOY
-            RETREAT
-            SPAWN
-            DISMISS
-            DIE
-        }
-
         enum InputHandlerStatusReturn{
             UNITSETTED
             NOUNIT

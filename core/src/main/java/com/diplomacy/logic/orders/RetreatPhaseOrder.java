@@ -1,8 +1,8 @@
-package com.diplomacy.orders;
+package com.diplomacy.logic.orders;
 
-import com.diplomacy.units.Unit;
+import com.diplomacy.logic.units.Unit;
 
-public class RetreatPhaseOrder extends Order {
+public abstract class RetreatPhaseOrder extends Order {
 
     private final Unit unitToRetreat;
 
