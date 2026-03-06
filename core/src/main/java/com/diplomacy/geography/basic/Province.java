@@ -3,49 +3,47 @@ package com.diplomacy.geography.basic;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.diplomacy.geography.utils.ProvinceSignature;
+import com.diplomacy.geography.utils.ProvinceType;
+import com.diplomacy.geography.utils.ResolveParameters;
 import com.diplomacy.units.Unit;
 
 public class Province {
 
-    private final boolean isSupplyCenter;
-    private final String name;
-    private final ProvinceType type;
+    private final ProvinceSignature signature;
     private final List<Location> locations;
-
-    private boolean isBattled = false;
+    private final ResolveParameters resolveParameters;
     private Unit occupyingUnit = null;
 
-    public Province(boolean isSupplyCenter, String name, ProvinceType type, List<Location> locations) {
-        this(isSupplyCenter, name, type, locations, false, null);
+    public Province(ProvinceSignature signature, List<Location> locations) {
+        this(signature, locations, new ResolveParameters(), null);
     }
 
-    public Province(boolean isSupplyCenter, String name, ProvinceType type, List<Location> locations, boolean isBattled) {
-        this(isSupplyCenter, name, type, locations, isBattled, null);
+    public Province(ProvinceSignature signature, List<Location> locations, ResolveParameters resolveParameters) {
+        this(signature, locations, resolveParameters, null);
     }
 
-    public Province(boolean isSupplyCenter, String name, ProvinceType type, List<Location> locations, Unit occupyingUnit) {
-        this(isSupplyCenter, name, type, locations, false, occupyingUnit);
+    public Province(ProvinceSignature signature, List<Location> locations, Unit occupyingUnit) {
+        this(signature, locations, new ResolveParameters(), occupyingUnit);
     }
 
-    public Province(boolean isSupplyCenter, String name, ProvinceType type, List<Location> locations, boolean isBattled, Unit occupyingUnit) {
-        this.isSupplyCenter = isSupplyCenter;
-        this.name = name;
-        this.type = type;
+    public Province(ProvinceSignature signature, List<Location> locations, ResolveParameters resolveParameters, Unit occupyingUnit) {
+        this.signature = signature;
         this.locations = (locations != null) ? locations : new ArrayList<>();
-        this.isBattled = isBattled;
+        this.resolveParameters = resolveParameters;
         this.occupyingUnit = occupyingUnit;
     }
 
     public String getName() {
-        return name;
+        return signature.getName();
     }
 
     public ProvinceType getType() {
-        return type;
+        return signature.getType();
     }
 
     public boolean isSupplyCenter() {
-        return isSupplyCenter;
+        return signature.isSupplyCenter();
     }
 
     public List<Location> getLocations() {
@@ -68,11 +66,19 @@ public class Province {
         return occupyingUnit != null;
     }
 
+    public ProvinceSignature getSignature() {
+        return signature;
+    }
+
+    public ResolveParameters getResolveParameters() {
+        return resolveParameters;
+    }
+
     public boolean isBattled() {
-        return isBattled;
+        return resolveParameters.isBattled();
     }
 
     public void setBattled(boolean battled) {
-        isBattled = battled;
+        resolveParameters.setBattled(battled);
     }
 }

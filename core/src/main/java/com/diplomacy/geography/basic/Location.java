@@ -2,6 +2,7 @@ package com.diplomacy.geography.basic;
 
 import java.util.ArrayList;
 import java.util.List;
+import com.diplomacy.geography.utils.ProvinceType;
 
 public class Location {
 
@@ -31,6 +32,10 @@ public class Location {
         if (neighbours.isEmpty()) {
             return true;
         }
-        return neighbours.get(0).getParentProvince().getType() != ProvinceType.WATER;
+        boolean flag = true;lag
+        for (Location neighbour : neighbours) {
+            flag = f && neighbour.getParentProvince().getType() != ProvinceType.WATER
+        }
+        return flag;
     }
 }

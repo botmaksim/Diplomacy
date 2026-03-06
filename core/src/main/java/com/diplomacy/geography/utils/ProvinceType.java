@@ -1,4 +1,4 @@
-package com.diplomacy.geography.basic;
+package com.diplomacy.geography.utils;
 
 public enum ProvinceType {
     LAND, WATER, COASTAL
