@@ -1,4 +1,4 @@
-package com.diplomacy.player;
+package com.diplomacy.logic.player;
 
 public class Password {
 

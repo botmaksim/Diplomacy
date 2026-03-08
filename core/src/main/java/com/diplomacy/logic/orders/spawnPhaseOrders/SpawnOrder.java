@@ -1,8 +1,8 @@
-package com.diplomacy.orders.spawnPhaseOrders;
+package com.diplomacy.logic.orders.spawnPhaseOrders;
 
-import com.diplomacy.geography.basic.Location;
-import com.diplomacy.orders.SpawnPhaseOrder;
-import com.diplomacy.player.Player;
+import com.diplomacy.logic.geography.basic.Location;
+import com.diplomacy.logic.orders.SpawnPhaseOrder;
+import com.diplomacy.logic.player.Player;
 
 public class SpawnOrder extends SpawnPhaseOrder {
 

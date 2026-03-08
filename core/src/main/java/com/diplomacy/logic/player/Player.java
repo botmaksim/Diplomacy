@@ -1,11 +1,11 @@
-package com.diplomacy.player;
+package com.diplomacy.logic.player;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.diplomacy.geography.advanced.Country;
-import com.diplomacy.geography.basic.Province;
-import com.diplomacy.units.Unit;
+import com.diplomacy.logic.geography.advanced.Country;
+import com.diplomacy.logic.geography.basic.Province;
+import com.diplomacy.logic.units.Unit;
 
 public class Player {
 

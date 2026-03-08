@@ -1,16 +1,16 @@
-package com.diplomacy.orders.utils;
+package com.diplomacy.logic.orders.utils;
 
-import com.diplomacy.geography.basic.Location;
-import com.diplomacy.geography.basic.Province;
-import com.diplomacy.player.Player;
-import com.diplomacy.units.Unit;
+import com.diplomacy.logic.geography.basic.Location;
+import com.diplomacy.logic.geography.basic.Province;
+import com.diplomacy.logic.player.Player;
+import com.diplomacy.logic.units.Unit;
 
 public class OrderPrototype {
 
     private OrderType orderType;
     private Location selectedLocation;
     private Province destination;
-    private Unit ArmyToConvoy;
+    private Unit additionalUnit;
     private Player player;
 
     public OrderPrototype() {
@@ -32,8 +32,8 @@ public class OrderPrototype {
         this.player = player;
     }
 
-    public void setArmyToConvoy(Unit ArmyToConvoy) {
-        this.ArmyToConvoy = ArmyToConvoy;
+    public void setAdditionalUnit(Unit additionalUnit) {
+        this.additionalUnit = additionalUnit;
     }
 
     public Location getSelectedLocation() {
@@ -52,8 +52,8 @@ public class OrderPrototype {
         return player;
     }
 
-    public Unit getArmyToConvoy() {
-        return ArmyToConvoy;
+    public Unit getAdditionalUnit() {
+        return additionalUnit;
     }
 
     public boolean isSetDestination() {
@@ -72,8 +72,8 @@ public class OrderPrototype {
         return player != null;
     }
 
-    public boolean isSetArmyToConvoy() {
-        return ArmyToConvoy == null;
+    public boolean isSetAdditionalUnit() {
+        return additionalUnit == null;
     }
 
     public void Clear() {

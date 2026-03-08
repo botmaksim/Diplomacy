@@ -1,8 +1,8 @@
-package com.diplomacy.orders.retreatPhaseOrders;
+package com.diplomacy.logic.orders.retreatPhaseOrders;
 
-import com.diplomacy.geography.basic.Location;
-import com.diplomacy.orders.RetreatPhaseOrder;
-import com.diplomacy.units.Unit;
+import com.diplomacy.logic.geography.basic.Location;
+import com.diplomacy.logic.orders.RetreatPhaseOrder;
+import com.diplomacy.logic.units.Unit;
 
 public class RetreatOrder extends RetreatPhaseOrder {
 

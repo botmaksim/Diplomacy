@@ -1,4 +1,4 @@
-package com.diplomacy.units.utils;
+package com.diplomacy.logic.units.utils;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -8,14 +8,15 @@ import java.util.List;
 import java.util.Queue;
 import java.util.Set;
 
-import com.diplomacy.geography.basic.Location;
-import com.diplomacy.geography.utils.ProvinceType;
-import com.diplomacy.units.Unit;
+import com.diplomacy.logic.geography.basic.Location;
+import com.diplomacy.logic.geography.basic.Province;
+import com.diplomacy.logic.geography.utils.ProvinceType;
+import com.diplomacy.logic.units.Army;
 
 public class ConvoyHelper {
 
-    public boolean CanConvoy(Location current, Location end, Unit target) {
-        return !current.isArmyLocation() && target.getLocation().getParentProvince().getType() == ProvinceType.COASTAL && target.getLocation().isArmyLocation() && !end.getParentProvince().isOccupied() && doesPathExists(current, getFleetLocations(target.getLocation())) && doesPathExists(current, locationToList(end));
+    public boolean CanConvoy(Location current, Province end, Army target) {
+        return !current.isArmyLocation() && target.getLocation().getParentProvince().getType() == ProvinceType.COASTAL && target.getLocation().isArmyLocation() && !end.isOccupied() && doesPathExists(current, getFleetLocations(target.getLocation())) && doesPathExists(current, end.getLocations());
     }
 
     public List<Location> getListOfReachableByConvoyLocations(Location location) {
@@ -88,11 +89,5 @@ public class ConvoyHelper {
             }
         }
         return null;
-    }
-
-    List<Location> locationToList(Location location) {
-        List<Location> list = new ArrayList<>();
-        list.add(location);
-        return list;
     }
 }

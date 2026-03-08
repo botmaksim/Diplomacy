@@ -1,8 +1,8 @@
-package com.diplomacy.geography.advanced;
+package com.diplomacy.logic.geography.advanced;
 
 import java.util.List;
 
-import com.diplomacy.geography.basic.Province;
+import com.diplomacy.logic.geography.basic.Province;
 
 public class Region {
 

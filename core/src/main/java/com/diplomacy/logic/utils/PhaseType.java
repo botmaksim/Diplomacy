@@ -1,4 +1,4 @@
-package com.diplomacy.utils;
+package com.diplomacy.logic.utils;
 
 public enum PhaseType {
     MOVEMENT, RETREAT, SPAWN

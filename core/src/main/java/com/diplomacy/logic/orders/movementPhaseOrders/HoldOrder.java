@@ -1,7 +1,7 @@
-package com.diplomacy.orders.movementPhaseOrders;
+package com.diplomacy.logic.orders.movementPhaseOrders;
 
-import com.diplomacy.orders.MovementPhaseOrder;
-import com.diplomacy.units.Unit;
+import com.diplomacy.logic.orders.MovementPhaseOrder;
+import com.diplomacy.logic.units.Unit;
 
 public class HoldOrder extends MovementPhaseOrder {
 

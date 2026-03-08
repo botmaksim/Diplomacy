@@ -1,10 +1,10 @@
-package com.diplomacy.units;
+package com.diplomacy.logic.units;
 
 import java.util.List;
 
-import com.diplomacy.geography.basic.Location;
-import com.diplomacy.player.Player;
-import com.diplomacy.units.utils.ConvoyHelper;
+import com.diplomacy.logic.geography.basic.Location;
+import com.diplomacy.logic.player.Player;
+import com.diplomacy.logic.units.utils.ConvoyHelper;
 
 public class Army extends Unit {
 

@@ -1,12 +1,12 @@
-package com.diplomacy.geography.basic;
+package com.diplomacy.logic.geography.basic;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.diplomacy.geography.utils.ProvinceSignature;
-import com.diplomacy.geography.utils.ProvinceType;
-import com.diplomacy.geography.utils.ResolveParameters;
-import com.diplomacy.units.Unit;
+import com.diplomacy.logic.geography.utils.ProvinceSignature;
+import com.diplomacy.logic.geography.utils.ProvinceType;
+import com.diplomacy.logic.geography.utils.ResolveParameters;
+import com.diplomacy.logic.units.Unit;
 
 public class Province {
 

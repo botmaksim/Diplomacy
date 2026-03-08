@@ -1,8 +1,9 @@
-package com.diplomacy.units;
+package com.diplomacy.logic.units;
 
-import com.diplomacy.geography.basic.Location;
-import com.diplomacy.player.Player;
-import com.diplomacy.units.utils.ConvoyHelper;
+import com.diplomacy.logic.geography.basic.Location;
+import com.diplomacy.logic.geography.basic.Province;
+import com.diplomacy.logic.player.Player;
+import com.diplomacy.logic.units.utils.ConvoyHelper;
 
 public class Fleet extends Unit {
 
@@ -10,7 +11,7 @@ public class Fleet extends Unit {
         super(owner, location);
     }
 
-    public boolean canConvoy(Location destination, Army armyToConvoy) {
+    public boolean canConvoy(Province destination, Army armyToConvoy) {
         return new ConvoyHelper().CanConvoy(getLocation(), destination, armyToConvoy);
     }
 }

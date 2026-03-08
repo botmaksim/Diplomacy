@@ -1,7 +1,7 @@
-package com.diplomacy.units;
+package com.diplomacy.logic.units;
 
-import com.diplomacy.geography.basic.Location;
-import com.diplomacy.player.Player;
+import com.diplomacy.logic.geography.basic.Location;
+import com.diplomacy.logic.player.Player;
 
 public abstract class Unit {
 

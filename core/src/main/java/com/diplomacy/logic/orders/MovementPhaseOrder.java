@@ -1,6 +1,6 @@
-package com.diplomacy.orders;
+package com.diplomacy.logic.orders;
 
-import com.diplomacy.units.Unit;
+import com.diplomacy.logic.units.Unit;
 
 public abstract class MovementPhaseOrder extends Order {
 

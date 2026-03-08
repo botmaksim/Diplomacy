@@ -1,4 +1,4 @@
-package com.diplomacy.orders;
+package com.diplomacy.logic.orders;
 
 public abstract class Order {
 

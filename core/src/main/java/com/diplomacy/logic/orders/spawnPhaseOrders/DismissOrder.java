@@ -1,7 +1,7 @@
-package com.diplomacy.orders.spawnPhaseOrders;
+package com.diplomacy.logic.orders.spawnPhaseOrders;
 
-import com.diplomacy.orders.SpawnPhaseOrder;
-import com.diplomacy.units.Unit;
+import com.diplomacy.logic.orders.SpawnPhaseOrder;
+import com.diplomacy.logic.units.Unit;
 
 public class DismissOrder extends SpawnPhaseOrder {
 
