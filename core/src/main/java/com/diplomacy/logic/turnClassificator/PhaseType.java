@@ -1,4 +1,4 @@
-package com.diplomacy.logic.utils;
+package com.diplomacy.logic.turnClassificator;
 
 public enum PhaseType {
     MOVEMENT, RETREAT, SPAWN

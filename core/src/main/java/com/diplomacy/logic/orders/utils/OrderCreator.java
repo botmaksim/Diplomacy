@@ -18,10 +18,10 @@ import com.diplomacy.logic.orders.retreatPhaseOrders.DieOrder;
 import com.diplomacy.logic.orders.retreatPhaseOrders.RetreatOrder;
 import com.diplomacy.logic.orders.spawnPhaseOrders.DismissOrder;
 import com.diplomacy.logic.orders.spawnPhaseOrders.SpawnOrder;
+import com.diplomacy.logic.turnClassificator.PhaseType;
 import com.diplomacy.logic.units.Army;
 import com.diplomacy.logic.units.Fleet;
 import com.diplomacy.logic.units.Unit;
-import com.diplomacy.logic.utils.PhaseType;
 
 public class OrderCreator {
 

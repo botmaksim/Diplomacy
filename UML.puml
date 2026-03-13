@@ -334,17 +334,17 @@ package "game"{
             FALL
         }
 
-        class TurnClassificator{
+        class TurnClassificator {
             - turnNumber: int
             - season: Season
             - phase: PhaseType
-            + initialize(turn: int, season: Season, phaseType: PhaseType): void
-            + setTurnNumber(turn: int): void
-            + setSeason(season: Season): void
-            + setPhaseType(phase: PhaseType): void
+            + TurnClassificator(turn: int, season: Season, phase: PhaseType)
+            + getPhaseClassPhase(): Phase
+            + equals(turn: TurnClassificator): boolean
+            + less(turn: TurnClassificator): boolean
             + getTurnNumber(): int
             + getSeason(): Season
-            + getPhaseType(): PhaseType
+            + getPhase(): PhaseType
         }
 
         class GameMaster {
@@ -400,32 +400,46 @@ package "game"{
         Phase --> Order: stores
     }
 
-    package "save"{
-        class History {
-            - history: List<HistoryPhase>
-            + addHistoryPhase(hp: HistoryPhase): void
-            + extractHistoryPhase(turn: TurnClassificator): HistoryPhase
-            + extractLastHistoryPhase(): HistoryPhase
+    package "save" {
+        package "gameHistory" {
+            class History {
+                - history: List<HistoryPhase>
+                + addHistoryPhase(hp: HistoryPhase): void
+                + getHistoryPhase(turn: TurnClassificator): HistoryPhase
+            }
+
+            class HistoryPhase {
+                - turn: TurnClassificator
+                - orders: List<Order>
+            }
         }
 
-        class HistoryPhase {
-            - turn: TurnClassificator
-            - orders: List<Order>
-            + getTurn(): TurnClassificator
-            + getOrders(): List<Order>
+        package "saveData" {
+            enum SaveType {
+                FULL
+                HISTORY_ONLY
+            }
+
+            interface SaveContainer {
+                + getType(): SaveType
+            }
+
+            class FullGameSave implements SaveContainer {
+                + history: History
+                + map: Map
+                + players: List<Player>
+            }
+
+            class HistoryOnlySave implements SaveContainer {
+                + history: History
+            }
         }
 
-        class Saver{
-            + save(gameMaster: GameMaster): SaveFile
-            + save(history: History, players: List<Player>, map: Map): SaveFile
-            + loadTurn(turn: TurnClassificator, save: SaveFile): void
-            + loadLast(save: SaveFile): void
-            + extractTurns(save: SaveFile): TurnClassificator
+        class SaveManager {
+            - MAGIC_NUMBER: long
+            + save(data: SaveContainer, path: String): void
+            + load(file: File): SaveContainer
         }
-
-        Resolver --> History : provides data
-        History --> HistoryPhase : stores
-        Saver --> GameMaster : Saves
     }
 
     package "control TO DO NAHUI" {
