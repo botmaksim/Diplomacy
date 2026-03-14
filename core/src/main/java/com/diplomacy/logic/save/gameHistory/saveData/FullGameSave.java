@@ -1,26 +1,40 @@
 package com.diplomacy.logic.save.gameHistory.saveData;
 
-import java.util.List;
-
-import com.diplomacy.logic.geography.advanced.Map;
-import com.diplomacy.logic.player.Player;
+import com.diplomacy.logic.gameControllingUnits.GameMaster;
+import com.diplomacy.logic.save.GameFrame;
 import com.diplomacy.logic.save.gameHistory.History;
 
 class FullGameSave implements SaveContainer {
 
     private static final long serialVersionUID = 1L;
     public final History history;
-    public final Map map;
-    public final List<Player> players;
+    public final GameFrame init;
+    public final GameMaster gameMaster;
 
-    public FullGameSave(History history, Map map, List<Player> players) {
-        this.history = history;
-        this.map = map;
-        this.players = players;
+    public FullGameSave() {
+        this.history = null;
+        this.init = null;
+        this.gameMaster = null;
     }
 
     @Override
     public SaveType getType() {
         return SaveType.FULL;
+    }
+
+    public History getHistory() {
+        return history;
+    }
+
+    public GameFrame getInit() {
+        return init;
+    }
+
+    public static long getSerialVersionUID() {
+        return serialVersionUID;
+    }
+
+    public GameMaster getGameMaster() {
+        return gameMaster;
     }
 }

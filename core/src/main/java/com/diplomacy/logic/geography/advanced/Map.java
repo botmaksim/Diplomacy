@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.diplomacy.logic.geography.basic.Province;
 
-public class Map extends Region {
+public abstract class Map extends Region {
 
     public Map(List<Province> provinces) {
         super(provinces);

@@ -124,6 +124,9 @@ public class OrderCreator {
     }
 
     private VerificationResult checkDie(OrderPrototype prototype) {
+        if (!prototype.getSelectedLocation().getParentProvince().getOccupyingUnit().isRetreating()) {
+            return VerificationResult.NOT_RETREATING_UNIT;
+        }
         if (prototype.isSetAdditionalUnit() || prototype.isSetDestination()) {
             return VerificationResult.EXTRA_PARAMETERS;
         }
@@ -241,6 +244,10 @@ public class OrderCreator {
         }
         Unit unit = prototype.getSelectedLocation().getParentProvince().getOccupyingUnit();
 
+        if (!unit.isRetreating()) {
+            return VerificationResult.NOT_RETREATING_UNIT;
+        }
+
         if (getProvinceLocation(unit.getLocation().getNeighbours(), prototype.getDestination()) == null) {
             return VerificationResult.DESTINATION_NOT_REACHABLE;
         }
@@ -279,15 +286,15 @@ public class OrderCreator {
     private MovementPhaseOrder createMovementPhase(OrderPrototype prototype) {
         return switch (prototype.getOrderType()) {
             case HOLD ->
-                new HoldOrder(prototype.getSelectedLocation().getParentProvince().getOccupyingUnit());
+                new HoldOrder(prototype.getSelectedLocation());
             case MOVE ->
-                new MoveOrder(getProvinceLocation(prototype.getSelectedLocation().getNeighbours(), prototype.getDestination()), prototype.getSelectedLocation().getParentProvince().getOccupyingUnit());
+                new MoveOrder(getProvinceLocation(prototype.getSelectedLocation().getNeighbours(), prototype.getDestination()), prototype.getSelectedLocation());
             case SUPPORT ->
-                new SupportOrder(prototype.getAdditionalUnit(), getProvinceLocation(prototype.getAdditionalUnit().getLocation().getNeighbours(), prototype.getDestination()), prototype.getSelectedLocation().getParentProvince().getOccupyingUnit());
+                new SupportOrder(prototype.getAdditionalUnit().getLocation(), getProvinceLocation(prototype.getAdditionalUnit().getLocation().getNeighbours(), prototype.getDestination()), prototype.getSelectedLocation());
             case CONVOY ->
-                new ConvoyOrder(prototype.getAdditionalUnit(), getProvinceLocation(((Army) prototype.getAdditionalUnit()).getListOfReachableByConvoyLocations(), prototype.getDestination()), prototype.getSelectedLocation().getParentProvince().getOccupyingUnit());
+                new ConvoyOrder(prototype.getAdditionalUnit().getLocation(), getProvinceLocation(((Army) prototype.getAdditionalUnit()).getListOfReachableByConvoyLocations(), prototype.getDestination()), prototype.getSelectedLocation());
             case BECONVOYED ->
-                new BeConvoyedOrder(getProvinceLocation(((Army) prototype.getSelectedLocation().getParentProvince().getOccupyingUnit()).getListOfReachableByConvoyLocations(), prototype.getDestination()), prototype.getSelectedLocation().getParentProvince().getOccupyingUnit());
+                new BeConvoyedOrder(getProvinceLocation(((Army) prototype.getSelectedLocation().getParentProvince().getOccupyingUnit()).getListOfReachableByConvoyLocations(), prototype.getDestination()), prototype.getSelectedLocation());
             default ->
                 null;
         };
@@ -296,9 +303,9 @@ public class OrderCreator {
     private RetreatPhaseOrder createRetreatPhase(OrderPrototype prototype) {
         return switch (prototype.getOrderType()) {
             case RETREAT ->
-                new RetreatOrder(getProvinceLocation(prototype.getSelectedLocation().getNeighbours(), prototype.getDestination()), prototype.getSelectedLocation().getParentProvince().getOccupyingUnit());
+                new RetreatOrder(getProvinceLocation(prototype.getSelectedLocation().getNeighbours(), prototype.getDestination()), prototype.getSelectedLocation());
             case DIE ->
-                new DieOrder(prototype.getSelectedLocation().getParentProvince().getOccupyingUnit());
+                new DieOrder(prototype.getSelectedLocation());
             default ->
                 null;
         };
@@ -309,7 +316,7 @@ public class OrderCreator {
             case SPAWN ->
                 new SpawnOrder(prototype.getSelectedLocation(), prototype.getPlayer());
             case DISMISS ->
-                new DismissOrder(prototype.getSelectedLocation().getParentProvince().getOccupyingUnit());
+                new DismissOrder(prototype.getSelectedLocation());
             default ->
                 null;
         };

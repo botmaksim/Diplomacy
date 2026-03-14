@@ -1,12 +1,15 @@
 package com.diplomacy.logic.gameControllingUnits;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executor;
 
 import com.diplomacy.logic.gameControllingUnits.phase.Phase;
 import com.diplomacy.logic.geography.advanced.Map;
 import com.diplomacy.logic.player.Player;
 import com.diplomacy.logic.save.gameHistory.History;
 import com.diplomacy.logic.turnClassificator.TurnClassificator;
+import com.diplomacy.logic.units.Unit;
 
 public class GameMaster {
 
@@ -15,21 +18,24 @@ public class GameMaster {
     public final List<Player> players;
     public final Map map;
     public final History history;
+    public final Executor executor;
 
-    public GameMaster(List<Player> players, Map map, History history) {
+    public GameMaster(List<Player> players, Map map, History history, Executor executor) {
         if (history.getLastHistoryPhase() != null) {
             this.turn = history.getLastTurn();
         }
         this.players = players;
         this.map = map;
         this.history = history;
+        this.executor = executor;
     }
 
-    public GameMaster(List<Player> players, Map map, TurnClassificator turn) {
+    public GameMaster(List<Player> players, Map map, TurnClassificator turn, Executor executor) {
         this.turn = turn;
         this.players = players;
         this.map = map;
         this.history = new History();
+        this.executor = executor;
     }
 
     public Map getMap() {
@@ -53,7 +59,37 @@ public class GameMaster {
     }
 
     public boolean nextTurn() {
+        if (!phase.ableNextPhase()) {
+            return false;
+        }
+        phase.operate();
+        turn.nextTurn();
+        phase = turn.getPhaseClass();
+
         return true;
     }
 
+    public void resetRetreating() {
+        for (Player p : players) {
+            for (Unit u : p.getUnits()) {
+                u.setRetreating(false);
+            }
+        }
+    }
+
+    public List<Unit> getRetreating() {
+        List<Unit> retreating = new ArrayList<>();
+        for (Player p : players) {
+            for (Unit u : p.getUnits()) {
+                if (u.isRetreating()) {
+                    retreating.add(u);
+                }
+            }
+        }
+        return retreating;
+    }
+
+    public Executor getExecutor() {
+        return executor;
+    }
 }

@@ -1,17 +1,17 @@
 package com.diplomacy.logic.orders.spawnPhaseOrders;
 
+import com.diplomacy.logic.geography.basic.Location;
 import com.diplomacy.logic.orders.SpawnPhaseOrder;
-import com.diplomacy.logic.units.Unit;
 
 public class DismissOrder extends SpawnPhaseOrder {
 
-    private final Unit unitToDismiss;
+    private final Location unitToDismiss;
 
-    public DismissOrder(Unit unitToDismiss) {
+    public DismissOrder(Location unitToDismiss) {
         this.unitToDismiss = unitToDismiss;
     }
 
-    public Unit getUnitToDismiss() {
+    public Location getUnitToDismiss() {
         return unitToDismiss;
     }
 }

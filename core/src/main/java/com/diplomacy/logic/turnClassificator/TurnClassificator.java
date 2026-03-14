@@ -48,7 +48,7 @@ public class TurnClassificator {
 
     }
 
-    public Phase getPhaseClassPhase() {
+    public Phase getPhaseClass() {
         return switch (phase) {
             case MOVEMENT ->
                 new MovementPhase();

@@ -1,16 +1,16 @@
 package com.diplomacy.logic.orders;
 
-import com.diplomacy.logic.units.Unit;
+import com.diplomacy.logic.geography.basic.Location;
 
 public abstract class MovementPhaseOrder extends Order {
 
-    private final Unit executor;
+    private final Location executor;
 
-    public MovementPhaseOrder(Unit executor) {
+    public MovementPhaseOrder(Location executor) {
         this.executor = executor;
     }
 
-    public Unit getExecutor() {
+    public Location getExecutor() {
         return executor;
     }
 }

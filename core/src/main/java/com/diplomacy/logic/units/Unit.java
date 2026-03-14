@@ -5,6 +5,7 @@ import com.diplomacy.logic.player.Player;
 
 public abstract class Unit {
 
+    private boolean retreating = false;
     private final Player owner;
     private Location location;
 
@@ -15,6 +16,10 @@ public abstract class Unit {
 
     public Player getOwner() {
         return owner;
+    }
+
+    public void setRetreating(boolean retreating) {
+        this.retreating = retreating;
     }
 
     public void setLocation(Location location) {
@@ -29,4 +34,7 @@ public abstract class Unit {
         return location.getNeighbours().contains(target);
     }
 
+    public boolean isRetreating() {
+        return retreating;
+    }
 }

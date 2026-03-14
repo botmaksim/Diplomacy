@@ -8,19 +8,18 @@ import com.diplomacy.logic.turnClassificator.TurnClassificator;
 public class HistoryPhase {
 
     private final TurnClassificator turn;
-    private final List<Order> orders;
+    private final List<? extends Order> orders;
 
-    public HistoryPhase(TurnClassificator turn, List<Order> orders) {
+    public HistoryPhase(TurnClassificator turn, List<? extends Order> orders) {
         this.turn = turn;
         this.orders = orders;
     }
 
-    public List<Order> getOrders() {
+    public List<? extends Order> getOrders() {
         return orders;
     }
 
     public TurnClassificator getTurn() {
         return turn;
     }
-
 }

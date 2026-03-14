@@ -1,16 +1,16 @@
 package com.diplomacy.logic.orders;
 
-import com.diplomacy.logic.units.Unit;
+import com.diplomacy.logic.geography.basic.Location;
 
 public abstract class RetreatPhaseOrder extends Order {
 
-    private final Unit unitToRetreat;
+    private final Location unitToRetreat;
 
-    public RetreatPhaseOrder(Unit unitToRetreat) {
+    public RetreatPhaseOrder(Location unitToRetreat) {
         this.unitToRetreat = unitToRetreat;
     }
 
-    public Unit getUnitToRetreat() {
+    public Location getUnitToRetreat() {
         return unitToRetreat;
     }
 }
