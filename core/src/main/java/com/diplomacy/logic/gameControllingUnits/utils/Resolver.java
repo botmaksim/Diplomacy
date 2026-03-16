@@ -10,11 +10,35 @@ import com.diplomacy.logic.geography.basic.Province;
 import com.diplomacy.logic.orders.MovementPhaseOrder;
 import com.diplomacy.logic.orders.RetreatPhaseOrder;
 import com.diplomacy.logic.orders.SpawnPhaseOrder;
+import com.diplomacy.logic.orders.movementPhaseOrders.BeConvoyedOrder;
+import com.diplomacy.logic.orders.movementPhaseOrders.ConvoyOrder;
+import com.diplomacy.logic.orders.movementPhaseOrders.MoveOrder;
+import com.diplomacy.logic.orders.movementPhaseOrders.SupportOrder;
 import com.diplomacy.logic.orders.retreatPhaseOrders.RetreatOrder;
 
 public class Resolver {
 
     public void resolveMovements(List<MovementPhaseOrder> orders, GameMaster gameMaster) {
+        List<MoveOrder> moveOrders = orders.stream()
+                .filter(MoveOrder.class::isInstance)
+                .map(MoveOrder.class::cast)
+                .toList();
+
+        List<SupportOrder> supportOrders = orders.stream()
+                .filter(SupportOrder.class::isInstance)
+                .map(SupportOrder.class::cast)
+                .toList();
+
+        List<ConvoyOrder> convoyOrders = orders.stream()
+                .filter(ConvoyOrder.class::isInstance)
+                .map(ConvoyOrder.class::cast)
+                .toList();
+
+        List<BeConvoyedOrder> beConvoyedOrders = orders.stream()
+                .filter(BeConvoyedOrder.class::isInstance)
+                .map(BeConvoyedOrder.class::cast)
+                .toList();
+
     }
 
     public void resolveRetreats(List<RetreatPhaseOrder> orders, GameMaster gameMaster) {

@@ -108,7 +108,7 @@ public class Executor {
                 spawn(s.getDestination(), s.getPlayer());
             }
             if (o.isExecutable() && o instanceof DismissOrder d) {
-                eliminate(d.getUnitToDismiss().getParentProvince().getOccupyingUnit());
+                eliminate(d.getDestination().getParentProvince().getOccupyingUnit());
             }
         }
     }

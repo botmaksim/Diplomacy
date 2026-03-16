@@ -5,13 +5,8 @@ import com.diplomacy.logic.orders.SpawnPhaseOrder;
 
 public class DismissOrder extends SpawnPhaseOrder {
 
-    private final Location unitToDismiss;
-
-    public DismissOrder(Location unitToDismiss) {
-        this.unitToDismiss = unitToDismiss;
+    public DismissOrder(Location destination) {
+        super(destination);
     }
 
-    public Location getUnitToDismiss() {
-        return unitToDismiss;
-    }
 }

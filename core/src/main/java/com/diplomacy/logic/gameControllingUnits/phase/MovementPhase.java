@@ -21,6 +21,11 @@ public class MovementPhase implements Phase {
     @Override
     public boolean addOrder(Order order) {
         if (order instanceof MovementPhaseOrder moveOrder) {
+            for (MovementPhaseOrder o : orders) {
+                if (o.getExecutor() == moveOrder.getExecutor()) {
+                    return false;
+                }
+            }
             orders.add(moveOrder);
             return true;
         }

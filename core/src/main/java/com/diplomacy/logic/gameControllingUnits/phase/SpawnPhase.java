@@ -29,6 +29,11 @@ public class SpawnPhase implements Phase {
     @Override
     public boolean addOrder(Order order) {
         if (order instanceof SpawnOrder spawnOrder) {
+            for (SpawnPhaseOrder o : orders) {
+                if (o.getDestination() == spawnOrder.getDestination()) {
+                    return false;
+                }
+            }
             orders.add(spawnOrder);
             return true;
         }
@@ -68,7 +73,7 @@ public class SpawnPhase implements Phase {
 
         for (SpawnPhaseOrder o : orders) {
             if (o instanceof DismissOrder d) {
-                unitChange.merge(d.getUnitToDismiss().getParentProvince().getOccupyingUnit().getOwner(), -1, Integer::sum);
+                unitChange.merge(d.getDestination().getParentProvince().getOccupyingUnit().getOwner(), -1, Integer::sum);
             }
             if (o instanceof SpawnOrder s) {
                 unitChange.merge(s.getPlayer(), 1, Integer::sum);

@@ -2,9 +2,9 @@ package com.diplomacy.logic.gameControllingUnits;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Executor;
 
 import com.diplomacy.logic.gameControllingUnits.phase.Phase;
+import com.diplomacy.logic.gameControllingUnits.utils.Executor;
 import com.diplomacy.logic.geography.advanced.Map;
 import com.diplomacy.logic.player.Player;
 import com.diplomacy.logic.save.gameHistory.History;
@@ -67,14 +67,6 @@ public class GameMaster {
         phase = turn.getPhaseClass();
 
         return true;
-    }
-
-    public void resetRetreating() {
-        for (Player p : players) {
-            for (Unit u : p.getUnits()) {
-                u.setRetreating(false);
-            }
-        }
     }
 
     public List<Unit> getRetreating() {

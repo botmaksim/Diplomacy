@@ -34,6 +34,11 @@ public class RetreatPhase implements Phase {
         turn.setPhase(PhaseType.RETREAT);
 
         if (order instanceof RetreatOrder r) {
+            for (RetreatPhaseOrder o : orders) {
+                if (o.getUnitToRetreat() == r.getUnitToRetreat()) {
+                    return false;
+                }
+            }
             for (MovementPhaseOrder o : movementOrders) {
                 if (o.isExecutable() && (o instanceof MoveOrder m)) {
                     if (m.getDestination() == r.getUnitToRetreat() && m.getExecutor() == r.getDestination()) {
@@ -84,7 +89,6 @@ public class RetreatPhase implements Phase {
         gameMaster.getExecutor().executeRetreats(orders, gameMaster);
         gameMaster.getExecutor().executeRetreats(orders, gameMaster);
 
-        gameMaster.resetRetreating();
         gameMaster.getMap().resetBattleFlags();
     }
 

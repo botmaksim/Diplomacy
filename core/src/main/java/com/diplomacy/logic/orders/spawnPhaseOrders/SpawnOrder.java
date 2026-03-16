@@ -6,16 +6,11 @@ import com.diplomacy.logic.player.Player;
 
 public class SpawnOrder extends SpawnPhaseOrder {
 
-    private final Location destination;
     private final Player player;
 
     public SpawnOrder(Location destination, Player player) {
-        this.destination = destination;
+        super(destination);
         this.player = player;
-    }
-
-    public Location getDestination() {
-        return destination;
     }
 
     public Player getPlayer() {
