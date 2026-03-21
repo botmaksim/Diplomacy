@@ -7,8 +7,8 @@ public class RetreatOrder extends RetreatPhaseOrder {
 
     private final Location destination;
 
-    public RetreatOrder(Location destination, Location unitToRetreat) {
-        super(unitToRetreat);
+    public RetreatOrder(Location destination, Location target) {
+        super(target);
         this.destination = destination;
     }
 

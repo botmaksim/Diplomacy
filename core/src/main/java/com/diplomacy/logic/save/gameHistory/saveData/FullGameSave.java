@@ -1,6 +1,7 @@
 package com.diplomacy.logic.save.gameHistory.saveData;
 
-import com.diplomacy.logic.gameControllingUnits.GameMaster;
+import java.util.concurrent.Executor;
+
 import com.diplomacy.logic.save.GameFrame;
 import com.diplomacy.logic.save.gameHistory.History;
 
@@ -8,13 +9,14 @@ class FullGameSave implements SaveContainer {
 
     private static final long serialVersionUID = 1L;
     public final History history;
-    public final GameFrame init;
-    public final GameMaster gameMaster;
+    public final GameFrame init, save;
+    public final Executor executor;
 
-    public FullGameSave() {
-        this.history = null;
-        this.init = null;
-        this.gameMaster = null;
+    public FullGameSave(History history, GameFrame init, GameFrame save, Executor executor) {
+        this.history = history;
+        this.init = init;
+        this.save = save;
+        this.executor = executor;
     }
 
     @Override
@@ -30,11 +32,15 @@ class FullGameSave implements SaveContainer {
         return init;
     }
 
-    public static long getSerialVersionUID() {
-        return serialVersionUID;
+    public Executor getExecutor() {
+        return executor;
     }
 
-    public GameMaster getGameMaster() {
-        return gameMaster;
+    public GameFrame getSave() {
+        return save;
+    }
+
+    public static long getSerialVersionUID() {
+        return serialVersionUID;
     }
 }

@@ -268,10 +268,6 @@ public class OrderCreator {
             return VerificationResult.PROVINCE_NOT_OWNED_BY_PLAYER;
         }
 
-        if (prototype.getSelectedLocation().getParentProvince().isOccupied()) {
-            return VerificationResult.PROVINCE_ALREADY_OCCUPIED;
-        }
-
         if (!prototype.getPlayer().getCountry().getProvinces().contains(prototype.getSelectedLocation().getParentProvince())) {
             return VerificationResult.NOT_INITIAL_COUNTRY_PROVINCE;
         }

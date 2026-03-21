@@ -7,8 +7,8 @@ public class BeConvoyedOrder extends MovementPhaseOrder {
 
     private final Location destination;
 
-    public BeConvoyedOrder(Location destination, Location executor) {
-        super(executor);
+    public BeConvoyedOrder(Location destination, Location target) {
+        super(target);
         this.destination = destination;
     }
 

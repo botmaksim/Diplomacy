@@ -1,10 +1,12 @@
 package com.diplomacy.logic.units;
 
 import java.util.List;
+import java.util.function.Function;
 
 import com.diplomacy.logic.geography.basic.Location;
 import com.diplomacy.logic.player.Player;
 import com.diplomacy.logic.units.utils.ConvoyHelper;
+import com.diplomacy.logic.utils.Pair;
 
 public class Army extends Unit {
 
@@ -12,26 +14,19 @@ public class Army extends Unit {
         super(owner, location);
     }
 
-    public boolean canConvoyToFiltred(Location target) {
-        return this.getListOfReachableByConvoyLocationsFiltred().contains(target);
-    }
-
-    public List<Location> getListOfReachableByConvoyLocationsFiltred() {
-        List<Location> candidates = new ConvoyHelper().getListOfReachableByConvoyLocations(getLocation());
-        for (Location current : candidates) {
-            if (current.getParentProvince().isOccupied()) {
-                candidates.remove(current);
-            }
-        }
-        return candidates;
-    }
-
     public boolean canConvoyTo(Location target) {
         return this.getListOfReachableByConvoyLocations().contains(target);
     }
 
-    public List<Location> getListOfReachableByConvoyLocations() {
-        return new ConvoyHelper().getListOfReachableByConvoyLocations(getLocation());
+    public boolean canConvoyTo(Location target, Function<Pair<Location, Unit>, Boolean> isAbleToConvoy) {
+        return this.getListOfReachableByConvoyLocations(isAbleToConvoy).contains(target);
     }
 
+    public List<Location> getListOfReachableByConvoyLocations() {
+        return new ConvoyHelper().getListOfReachableByConvoyLocations(getLocation(), pair -> pair.first().getParentProvince().isOccupied());
+    }
+
+    public List<Location> getListOfReachableByConvoyLocations(Function<Pair<Location, Unit>, Boolean> isAbleToConvoy) {
+        return new ConvoyHelper(this).getListOfReachableByConvoyLocations(getLocation(), isAbleToConvoy);
+    }
 }

@@ -5,7 +5,7 @@ import com.diplomacy.logic.orders.MovementPhaseOrder;
 
 public class HoldOrder extends MovementPhaseOrder {
 
-    public HoldOrder(Location executor) {
-        super(executor);
+    public HoldOrder(Location target) {
+        super(target);
     }
 }

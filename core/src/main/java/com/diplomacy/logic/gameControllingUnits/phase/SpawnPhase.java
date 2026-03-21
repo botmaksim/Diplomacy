@@ -29,12 +29,22 @@ public class SpawnPhase implements Phase {
     @Override
     public boolean addOrder(Order order) {
         if (order instanceof SpawnOrder spawnOrder) {
-            for (SpawnPhaseOrder o : orders) {
-                if (o.getDestination() == spawnOrder.getDestination()) {
+            for (SpawnOrder o : orders.stream().filter(SpawnOrder.class::isInstance).map(SpawnOrder.class::cast).toList()) {
+                if (o.getTarget() == spawnOrder.getTarget()) {
                     return false;
                 }
             }
             orders.add(spawnOrder);
+            return true;
+        }
+
+        if (order instanceof DismissOrder dismissnOrder) {
+            for (DismissOrder o : orders.stream().filter(DismissOrder.class::isInstance).map(DismissOrder.class::cast).toList()) {
+                if (o.getTarget() == dismissnOrder.getTarget()) {
+                    return false;
+                }
+            }
+            orders.add(dismissnOrder);
             return true;
         }
 
@@ -73,7 +83,7 @@ public class SpawnPhase implements Phase {
 
         for (SpawnPhaseOrder o : orders) {
             if (o instanceof DismissOrder d) {
-                unitChange.merge(d.getDestination().getParentProvince().getOccupyingUnit().getOwner(), -1, Integer::sum);
+                unitChange.merge(d.getTarget().getParentProvince().getOccupyingUnit().getOwner(), -1, Integer::sum);
             }
             if (o instanceof SpawnOrder s) {
                 unitChange.merge(s.getPlayer(), 1, Integer::sum);

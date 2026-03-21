@@ -7,12 +7,13 @@ public class MoveOrder extends MovementPhaseOrder {
 
     private final Location destination;
 
-    public MoveOrder(Location destination, Location executor) {
-        super(executor);
+    public MoveOrder(Location destination, Location target) {
+        super(target);
         this.destination = destination;
     }
 
     public Location getDestination() {
         return destination;
     }
+
 }

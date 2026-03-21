@@ -5,8 +5,7 @@ import com.diplomacy.logic.orders.RetreatPhaseOrder;
 
 public class DieOrder extends RetreatPhaseOrder {
 
-    public DieOrder(Location unitToRetreat) {
-        super(unitToRetreat);
+    public DieOrder(Location target) {
+        super(target);
     }
-
 }

@@ -8,8 +8,8 @@ public class ConvoyOrder extends MovementPhaseOrder {
     private final Location convoyedArmy;
     private final Location destination;
 
-    public ConvoyOrder(Location convoyedArmy, Location destination, Location executor) {
-        super(executor);
+    public ConvoyOrder(Location convoyedArmy, Location destination, Location target) {
+        super(target);
         this.convoyedArmy = convoyedArmy;
         this.destination = destination;
     }

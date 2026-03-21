@@ -4,13 +4,8 @@ import com.diplomacy.logic.geography.basic.Location;
 
 public abstract class MovementPhaseOrder extends Order {
 
-    private final Location executor;
-
-    public MovementPhaseOrder(Location executor) {
-        this.executor = executor;
+    public MovementPhaseOrder(Location target) {
+        super(target);
     }
 
-    public Location getExecutor() {
-        return executor;
-    }
 }

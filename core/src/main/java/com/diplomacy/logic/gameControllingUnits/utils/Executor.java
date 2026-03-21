@@ -62,16 +62,15 @@ public class Executor {
     public void beginExecuteMovements(List<MovementPhaseOrder> orders, GameMaster gameMaster) {
         for (Order o : orders) {
             if (o.isExecutable() && o instanceof MoveOrder m) {
-                remove(m.getExecutor().getParentProvince().getOccupyingUnit());
-                unfinished.add(new UnfinishedMoveOrder(m.getExecutor().getParentProvince().getOccupyingUnit(), m.getDestination()));
+                remove(m.getTarget().getParentProvince().getOccupyingUnit());
+                unfinished.add(new UnfinishedMoveOrder(m.getTarget().getParentProvince().getOccupyingUnit(), m.getDestination()));
             }
 
             if (o.isExecutable() && o instanceof BeConvoyedOrder bc) {
-                remove(bc.getExecutor().getParentProvince().getOccupyingUnit());
-                unfinished.add(new UnfinishedMoveOrder(bc.getExecutor().getParentProvince().getOccupyingUnit(), bc.getDestination()));
+                remove(bc.getTarget().getParentProvince().getOccupyingUnit());
+                unfinished.add(new UnfinishedMoveOrder(bc.getTarget().getParentProvince().getOccupyingUnit(), bc.getDestination()));
 
             }
-
         }
     }
 
@@ -84,16 +83,16 @@ public class Executor {
     public void executeRetreats(List<RetreatPhaseOrder> orders, GameMaster gameMaster) {
         for (Order o : orders) {
             if (o.isExecutable() && o instanceof DieOrder d) {
-                eliminate(d.getUnitToRetreat().getParentProvince().getOccupyingUnit());
+                eliminate(d.getTarget().getParentProvince().getOccupyingUnit());
             }
 
             if (!o.isExecutable() && o instanceof RetreatOrder r) {
-                eliminate(r.getUnitToRetreat().getParentProvince().getOccupyingUnit());
+                eliminate(r.getTarget().getParentProvince().getOccupyingUnit());
 
             }
 
             if (o.isExecutable() && o instanceof RetreatOrder r) {
-                move(r.getUnitToRetreat().getParentProvince().getOccupyingUnit(), r.getDestination());
+                move(r.getTarget().getParentProvince().getOccupyingUnit(), r.getDestination());
             }
         }
 
@@ -105,10 +104,10 @@ public class Executor {
     public void executeSpawns(List<SpawnPhaseOrder> orders, GameMaster gameMaster) {
         for (SpawnPhaseOrder o : orders) {
             if (o.isExecutable() && o instanceof SpawnOrder s) {
-                spawn(s.getDestination(), s.getPlayer());
+                spawn(s.getTarget(), s.getPlayer());
             }
             if (o.isExecutable() && o instanceof DismissOrder d) {
-                eliminate(d.getDestination().getParentProvince().getOccupyingUnit());
+                eliminate(d.getTarget().getParentProvince().getOccupyingUnit());
             }
         }
     }

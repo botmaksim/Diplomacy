@@ -8,8 +8,8 @@ public class SupportOrder extends MovementPhaseOrder {
     private final Location supportedUnit;
     private final Location destination;
 
-    public SupportOrder(Location supportedUnit, Location destination, Location executor) {
-        super(executor);
+    public SupportOrder(Location supportedUnit, Location destination, Location target) {
+        super(target);
         this.supportedUnit = supportedUnit;
         this.destination = destination;
     }

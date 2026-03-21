@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.diplomacy.logic.gameControllingUnits.GameMaster;
 import com.diplomacy.logic.gameControllingUnits.utils.Resolver;
+import com.diplomacy.logic.gameControllingUnits.utils.SupplyCentersReallocator;
 import com.diplomacy.logic.orders.MovementPhaseOrder;
 import com.diplomacy.logic.orders.Order;
 import com.diplomacy.logic.orders.RetreatPhaseOrder;
@@ -35,22 +36,23 @@ public class RetreatPhase implements Phase {
 
         if (order instanceof RetreatOrder r) {
             for (RetreatPhaseOrder o : orders) {
-                if (o.getUnitToRetreat() == r.getUnitToRetreat()) {
+                if (o.getTarget() == r.getTarget()) {
                     return false;
                 }
             }
             for (MovementPhaseOrder o : movementOrders) {
                 if (o.isExecutable() && (o instanceof MoveOrder m)) {
-                    if (m.getDestination() == r.getUnitToRetreat() && m.getExecutor() == r.getDestination()) {
+                    if (m.getDestination() == r.getTarget() && m.getTarget() == r.getDestination()) {
                         return false;
                     }
                 }
                 if (o.isExecutable() && (o instanceof BeConvoyedOrder bc)) {
-                    if (bc.getDestination() == r.getUnitToRetreat() && bc.getExecutor() == r.getDestination()) {
+                    if (bc.getDestination() == r.getTarget() && bc.getTarget() == r.getDestination()) {
                         return false;
                     }
                 }
             }
+            orders.add(r);
             return true;
         }
         return false;
@@ -85,6 +87,9 @@ public class RetreatPhase implements Phase {
         r.resolveRetreats(orders, gameMaster);
 
         gameMaster.getHistory().addHistoryPhase(new HistoryPhase(gameMaster.getTurn(), orders));
+
+        SupplyCentersReallocator reallocator = new SupplyCentersReallocator();
+        reallocator.reallocateSupplyCentersRetreat(orders);
 
         gameMaster.getExecutor().executeRetreats(orders, gameMaster);
         gameMaster.getExecutor().executeRetreats(orders, gameMaster);
