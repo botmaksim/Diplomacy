@@ -81,6 +81,14 @@ public class GameMaster {
         return retreating;
     }
 
+    public List<Unit> getUnits() {
+        List<Unit> units = new ArrayList<>();
+        for (Player p : players) {
+            units.addAll(p.getUnits());
+        }
+        return units;
+    }
+
     public Executor getExecutor() {
         return executor;
     }

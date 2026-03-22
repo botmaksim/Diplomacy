@@ -35,12 +35,13 @@ public class Resolver {
                 .filter(BeConvoyedOrder.class::isInstance)
                 .map(BeConvoyedOrder.class::cast)
                 .toList();
-        Map<Location, MovementPhaseOrder> targetOrder = new HashMap<>();
 
+        Map<Location, MovementPhaseOrder> targetOrder = new HashMap<>();
         for (MovementPhaseOrder o : orders) {
             targetOrder.put(o.getTarget(), o);
         }
 
+        Map<Location, Integer> holdPower = new HashMap<>();
         Map<Location, Integer> movePower = new HashMap<>();
         Map<Location, Integer> convoyPower = new HashMap<>();
 
@@ -59,13 +60,16 @@ public class Resolver {
             MovementPhaseOrder o = targetOrder.get(s.getSupportedUnit());
             if (o instanceof MoveOrder m) {
                 movePower.merge(m.getTarget(), 1, Integer::sum);
-            }
-            if (o instanceof BeConvoyedOrder bc) {
+            } else if (o instanceof BeConvoyedOrder bc) {
                 convoyPower.merge(bc.getTarget(), 1, Integer::sum);
+            } else if (holdPower.containsKey(s.getSupportedUnit())) {
+                holdPower.put(s.getSupportedUnit(), 2);
+            } else {
+                holdPower.merge(s.getTarget(), 1, Integer::sum);
             }
         }
 
-        BattleGraph battleGraph = new BattleGraph(moveOrders, movePower);
+        BattleGraph battleGraph = new BattleGraph(moveOrders, movePower, holdPower);
         List<Location> executableLocation = battleGraph.getExecutableOrders();
 
         for (Location l : executableLocation) {
@@ -93,12 +97,15 @@ public class Resolver {
                     s.setExecutable(false);
                     supportOrders.remove(s);
                     MovementPhaseOrder d = targetOrder.get(s.getSupportedUnit());
-                    if (d instanceof MoveOrder m) {
-                        movePower.merge(m.getTarget(), -1, Integer::sum);
-                        battleGraph.getPower().merge(m.getTarget(), -1, Integer::sum);
-                    }
-                    if (d instanceof BeConvoyedOrder dbc) {
-                        convoyPower.merge(dbc.getTarget(), -1, Integer::sum);
+                    switch (d) {
+                        case MoveOrder m -> {
+                            battleGraph.getPower().merge(m.getTarget(), -1, Integer::sum);
+                        }
+                        case BeConvoyedOrder dbc ->
+                            convoyPower.merge(dbc.getTarget(), -1, Integer::sum);
+                        default -> {
+                            battleGraph.getDef().merge(s.getSupportedUnit(), -1, Integer::sum);
+                        }
                     }
                 }
             }
@@ -112,10 +119,12 @@ public class Resolver {
             o.setExecutable(true);
             if (o instanceof MoveOrder m) {
                 m.getDestination().getParentProvince().setBattled(true);
+                m.getDestination().getParentProvince().getOccupyingUnit().setRetreating(true);
             }
 
             if (o instanceof BeConvoyedOrder bc) {
                 bc.getDestination().getParentProvince().setBattled(true);
+                bc.getDestination().getParentProvince().getOccupyingUnit().setRetreating(true);
             }
         }
     }
