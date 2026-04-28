@@ -33,10 +33,10 @@ public class Location {
         if (neighbours.isEmpty()) {
             return true;
         }
-        boolean flag = true;
+        boolean isArmyLocation = true;
         for (Location neighbour : neighbours) {
-            flag = flag && neighbour.getParentProvince().getType() != ProvinceType.WATER;
+            isArmyLocation = isArmyLocation && neighbour.getParentProvince().getType() != ProvinceType.WATER;
         }
-        return flag;
+        return isArmyLocation;
     }
 }

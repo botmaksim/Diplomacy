@@ -23,7 +23,10 @@ public class SaveManager {
     public void save(SaveContainer container, String fileName) throws IOException {
         File file = new File(fileName + EXTENSION);
 
-        try (FileOutputStream fos = new FileOutputStream(file); CheckedOutputStream cos = new CheckedOutputStream(fos, new CRC32()); ObjectOutputStream oos = new ObjectOutputStream(cos)) {
+        try (FileOutputStream fos = new FileOutputStream(file);
+            CheckedOutputStream cos = new CheckedOutputStream(fos, new CRC32());
+            ObjectOutputStream oos = new ObjectOutputStream(cos)
+            ) {
 
             oos.writeLong(MAGIC_NUMBER);
 
@@ -38,35 +41,38 @@ public class SaveManager {
 
     public SaveContainer load(File file) throws SaveException {
         if (!file.exists()) {
-            throw new SaveException("Файл не найден.");
+            throw new SaveException("File not found.");
         }
 
-        try (FileInputStream fis = new FileInputStream(file); CheckedInputStream cis = new CheckedInputStream(fis, new CRC32()); ObjectInputStream ois = new ObjectInputStream(cis)) {
+        try (FileInputStream fis = new FileInputStream(file);
+            CheckedInputStream cis = new CheckedInputStream(fis, new CRC32());
+            ObjectInputStream ois = new ObjectInputStream(cis)
+            ) {
 
             long magic = ois.readLong();
             if (magic != MAGIC_NUMBER) {
-                throw new SaveException("Неверная сигнатура.");
+                throw new SaveException("Wrong signature.");
             }
 
             Object obj = ois.readObject();
             if (!(obj instanceof SaveContainer)) {
-                throw new SaveException("Файл содержит некорректный тип данных.");
+                throw new SaveException("File contains wrong data types.");
             }
 
             long calculatedChecksum = cis.getChecksum().getValue();
             long storedChecksum = ois.readLong();
             if (calculatedChecksum != storedChecksum) {
-                throw new SaveException("Файл поврежден.");
+                throw new SaveException("File corrupted.");
             }
 
             return (SaveContainer) obj;
 
         } catch (ClassNotFoundException | InvalidClassException e) {
-            throw new SaveException("Файл несовместим.");
+            throw new SaveException("File incompatible.");
         } catch (StreamCorruptedException | EOFException e) {
-            throw new SaveException("Файл поврежден.");
+            throw new SaveException("File corrupted.");
         } catch (IOException e) {
-            throw new SaveException("Ошибка ввода-вывода при чтении файла.");
+            throw new SaveException("I/O error while reading file.");
         }
     }
 }

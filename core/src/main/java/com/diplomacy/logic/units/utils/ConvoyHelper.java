@@ -29,7 +29,12 @@ public class ConvoyHelper {
     }
 
     public boolean CanConvoy(Location current, Province end, Army target) {
-        return !current.isArmyLocation() && target.getLocation().getParentProvince().getType() == ProvinceType.COASTAL && target.getLocation().isArmyLocation() && !end.isOccupied() && doesPathExists(current, getFleetLocations(target.getLocation())) && doesPathExists(current, end.getLocations());
+        return !current.isArmyLocation() && 
+            target.getLocation().getParentProvince().getType() == ProvinceType.COASTAL &&
+            target.getLocation().isArmyLocation() &&
+            !end.isOccupied() &&
+            doesPathExists(current, getFleetLocations(target.getLocation())) &&
+            doesPathExists(current, end.getLocations());
     }
 
     public List<Location> getListOfReachableByConvoyLocations(Location location, Function<Pair<Location, Unit>, Boolean> isAbleToConvoy) {

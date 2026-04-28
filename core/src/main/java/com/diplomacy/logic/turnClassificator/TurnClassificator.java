@@ -58,7 +58,6 @@ public class TurnClassificator {
                 new SpawnPhase();
             default ->
                 null;
-
         };
     }
 
