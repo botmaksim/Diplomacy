@@ -14,6 +14,12 @@ public class TurnClassificator {
     private Season season;
     private PhaseType phase;
 
+    public TurnClassificator() {
+        this.turnNumber = 1900;
+        this.season = Season.SPRING;
+        this.phase = PhaseType.MOVEMENT;
+    }
+
     public TurnClassificator(int turnNumber, Season season, PhaseType phase) {
         this.turnNumber = turnNumber;
         this.season = season;

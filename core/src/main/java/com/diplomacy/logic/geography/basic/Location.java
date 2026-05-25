@@ -9,10 +9,12 @@ public class Location {
 
     private final List<Location> neighbours;
     private final Province parentProvince;
+    private final String name;
 
-    public Location(Province parentProvince) {
+    public Location(Province parentProvince, String name) {
         this.parentProvince = parentProvince;
         this.neighbours = new ArrayList<>();
+        this.name = name;
     }
 
     public void addNeighbour(Location neighbour) {
@@ -27,6 +29,10 @@ public class Location {
 
     public Province getParentProvince() {
         return parentProvince;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public boolean isArmyLocation() {

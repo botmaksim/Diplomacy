@@ -37,7 +37,8 @@ public class BattleGraph {
     }
 
     public List<Location> getExecutableOrders() {
-
+        return List.of();
+        // Zagluska
     }
 
     public Map<Location, Integer> getPower() {

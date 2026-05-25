@@ -29,4 +29,9 @@ public class Army extends Unit {
     public List<Location> getListOfReachableByConvoyLocations(Function<Pair<Location, Unit>, Boolean> isAbleToConvoy) {
         return new ConvoyHelper(this).getListOfReachableByConvoyLocations(getLocation(), isAbleToConvoy);
     }
+
+    @Override
+    public String getTypeName() {
+        return "army";
+    }
 }

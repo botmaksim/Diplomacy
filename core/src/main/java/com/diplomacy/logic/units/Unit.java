@@ -37,4 +37,6 @@ public abstract class Unit {
     public boolean isRetreating() {
         return retreating;
     }
+
+    public abstract String getTypeName();
 }

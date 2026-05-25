@@ -10,28 +10,34 @@ import com.diplomacy.logic.units.Unit;
 
 public class Province {
 
+    private final String id; 
     private final ProvinceSignature signature;
     private final List<Location> locations;
     private final ResolveParameters resolveParameters;
     private Unit occupyingUnit = null;
 
-    public Province(ProvinceSignature signature, List<Location> locations) {
-        this(signature, locations, new ResolveParameters(), null);
+    public Province(String id, ProvinceSignature signature, List<Location> locations) {
+        this(id, signature, locations, new ResolveParameters(), null);
     }
 
-    public Province(ProvinceSignature signature, List<Location> locations, ResolveParameters resolveParameters) {
-        this(signature, locations, resolveParameters, null);
+    public Province(String id, ProvinceSignature signature, List<Location> locations, ResolveParameters resolveParameters) {
+        this(id, signature, locations, resolveParameters, null);
     }
 
-    public Province(ProvinceSignature signature, List<Location> locations, Unit occupyingUnit) {
-        this(signature, locations, new ResolveParameters(), occupyingUnit);
+    public Province(String id, ProvinceSignature signature, List<Location> locations, Unit occupyingUnit) {
+        this(id, signature, locations, new ResolveParameters(), occupyingUnit);
     }
 
-    public Province(ProvinceSignature signature, List<Location> locations, ResolveParameters resolveParameters, Unit occupyingUnit) {
+    public Province(String id, ProvinceSignature signature, List<Location> locations, ResolveParameters resolveParameters, Unit occupyingUnit) {
+        this.id = id;
         this.signature = signature;
         this.locations = (locations != null) ? locations : new ArrayList<>();
         this.resolveParameters = resolveParameters;
         this.occupyingUnit = occupyingUnit;
+    }
+
+    public String getId() {
+        return id;
     }
 
     public String getName() {
@@ -44,6 +50,12 @@ public class Province {
 
     public boolean isSupplyCenter() {
         return signature.isSupplyCenter();
+    }
+
+    public void addLocation(Location location) {
+        if (location != null && !locations.contains(location)) {
+            this.locations.add(location);
+        }
     }
 
     public List<Location> getLocations() {

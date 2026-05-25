@@ -1,21 +1,22 @@
 package com.diplomacy.logic.save;
 
 import java.util.List;
+import java.util.Map;
 
-import com.diplomacy.logic.geography.advanced.Map;
+import com.diplomacy.logic.geography.advanced.GameMap;
 import com.diplomacy.logic.player.Player;
 
 public class GameFrame {
 
     public final List<Player> players;
-    public final Map map;
+    public final GameMap map;
 
-    public GameFrame(List<Player> players, Map map) {
+    public GameFrame(List<Player> players, GameMap map) {
         this.players = players;
         this.map = map;
     }
 
-    public Map getMap() {
+    public GameMap getMap() {
         return map;
     }
 

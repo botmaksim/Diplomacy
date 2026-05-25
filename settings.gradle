@@ -11,6 +11,7 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        maven { url 'https://jitpack.io' }
     }
 }
 
@@ -18,4 +19,4 @@ rootProject.name = 'Diplomacy'
 
 include ':core'
 include ':desktop'
-include ':android'
+// include ':android'

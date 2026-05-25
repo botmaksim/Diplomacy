@@ -1,15 +1,24 @@
 plugins {
     id 'application'
+    id 'org.openjfx.javafxplugin' version '0.0.14'
 }
 
-application {
-    mainClass = 'com.diplomacy.DesktopLauncher'
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+javafx {
+    version = "21"
+    modules = [ 'javafx.controls', 'javafx.fxml', 'javafx.graphics' ]
 }
 
 dependencies {
     implementation project(':core')
+    implementation 'com.github.hervegirod:fxsvgimage:1.1'
 }
 
-run {
-    standardInput = System.in
+application {
+    mainClass = 'com.diplomacy.desktop.controllers.DesktopLauncher'
 }

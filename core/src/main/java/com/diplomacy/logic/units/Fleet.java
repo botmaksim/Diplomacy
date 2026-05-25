@@ -14,4 +14,9 @@ public class Fleet extends Unit {
     public boolean canConvoy(Province destination, Army armyToConvoy) {
         return new ConvoyHelper().CanConvoy(getLocation(), destination, armyToConvoy);
     }
+
+    @Override
+    public String getTypeName() {
+        return "fleet";
+    }
 }
