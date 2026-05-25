@@ -1,4 +1,23 @@
 *.class
-*/py
+*.py
 
-/.gradle/
+build/
+bin/
+out/
+target/
+
+.gradle/
+gradle/
+gradlew
+gradlew.bat
+
+.idea/
+*.iml
+*.ipr
+*.iws
+.project
+.classpath
+.settings/
+.vscode/
+
+*.log

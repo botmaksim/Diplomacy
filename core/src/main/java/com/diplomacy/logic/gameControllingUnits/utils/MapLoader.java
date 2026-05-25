@@ -114,9 +114,14 @@ public class MapLoader {
             String provinceId = entry.getKey();
             ProvinceData data = entry.getValue();
 
+            String typeStr = data.type;
+            if ("SEA".equalsIgnoreCase(typeStr)) {
+                typeStr = "WATER";
+            }
+
             ProvinceType type;
-            try {
-                type = ProvinceType.valueOf(data.type);
+            try {   
+                type = ProvinceType.valueOf(typeStr);
             } catch (IllegalArgumentException e) {
                 throw new MapLoadException("Unknown province type: " + data.type + " for province " + provinceId);
             }
@@ -232,7 +237,7 @@ public class MapLoader {
     } // ++
 
     private static List<Country> createCountries(RawMapData raw,
-                                                Map<String, Province> provincesByLowerCaseKey) {
+                                                Map<String, Province> provincesById) {
         if (raw.countries == null) {
             throw new MapLoadException("Countries data is missing");
         }
@@ -241,14 +246,14 @@ public class MapLoader {
             CountryData data = entry.getValue();
             List<Province> provinces = data.home_centers == null ? List.of() :
                     data.home_centers.stream()
-                            .map(id -> provincesByLowerCaseKey.get(id.toLowerCase()))
+                            .map(id -> provincesById.get(id))
                             .filter(Objects::nonNull)
                             .collect(Collectors.toList());
 
             Map<Province, String> startingUnits = new HashMap<>();
             if (data.starting_units != null) {
                 data.starting_units.forEach((provinceId, unitType) -> {
-                    Province province = provincesByLowerCaseKey.get(provinceId.toLowerCase());
+                    Province province = provincesById.get(provinceId);
                     if (province != null) {
                         startingUnits.put(province, unitType);
                     } else {

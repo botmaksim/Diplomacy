@@ -74,11 +74,11 @@
       "locations": {
         "land": {
           "adjacency": ["Pie", "Ven", "Rom"],
-          "unit_coords": [0, 0]
+          "unit_coords": [246, 425]
         },
         "coast": {
           "adjacency": ["TYS", "LYO"],
-          "unit_coords": [0, 0]
+          "unit_coords": [246, 425]
         }
       }
     },
@@ -87,15 +87,15 @@
       "type": "COASTAL",
       "is_supply_center": true,
       "hex_ID": "000002",
-      "supply_center_coords": [0, 0],
+      "supply_center_coords": [424, 475],
       "locations": {
         "land": {
           "adjacency": ["Smy", "Ank", "Bul"],
-          "unit_coords": [0, 0]
+          "unit_coords": [443, 486]
         },
         "coast": {
           "adjacency": ["BLA", "AEG", "Bul"],
-          "unit_coords": [0, 0]
+          "unit_coords": [443, 486]
         }
       }
     },
@@ -104,15 +104,15 @@
       "type": "COASTAL",
       "is_supply_center": true,
       "hex_ID": "000003",
-      "supply_center_coords": [0, 0],
+      "supply_center_coords": [278, 469],
       "locations": {
         "land": {
           "adjacency": ["Rom", "Apu"],
-          "unit_coords": [0, 0]
+          "unit_coords": [300, 492]
         },
         "coast": {
           "adjacency": ["TYS", "ION"],
-          "unit_coords": [0, 0]
+          "unit_coords": [300, 492]
         }
       }
     },
@@ -124,7 +124,7 @@
       "locations": {
         "sea": {
           "adjacency": ["Ven", "Tri", "Alb", "ION", "Apu"],
-          "unit_coords": [0, 0]
+          "unit_coords": [314, 460]
         }
       }
     },
@@ -136,7 +136,7 @@
       "locations": {
         "sea": {
           "adjacency": ["Tus", "Rom", "Nap", "ION", "Tun", "WES", "LYO"],
-          "unit_coords": [0, 0]
+          "unit_coords": [251, 495]
         }
       }
     },
@@ -145,15 +145,15 @@
       "type": "COASTAL",
       "is_supply_center": true,
       "hex_ID": "000006",
-      "supply_center_coords": [0, 0],
+      "supply_center_coords": [290, 396],
       "locations": {
         "land": {
           "adjacency": ["Ven", "Tyr", "Vie", "Bud", "Ser", "Alb"],
-          "unit_coords": [0, 0]
+          "unit_coords": [311, 425]
         },
         "coast": {
           "adjacency": ["ADR"],
-          "unit_coords": [0, 0]
+          "unit_coords": [311, 425]
         }
       }
     },
@@ -162,15 +162,15 @@
       "type": "COASTAL",
       "is_supply_center": true,
       "hex_ID": "000007",
-      "supply_center_coords": [0, 0],
+      "supply_center_coords": [183, 302],
       "locations": {
         "land": {
           "adjacency": ["Pic", "Bur", "Ruh", "Hol"],
-          "unit_coords": [0, 0]
+          "unit_coords": [198, 321]
         },
         "coast": {
           "adjacency": ["NTH", "ENG"],
-          "unit_coords": [0, 0]
+          "unit_coords": [198, 321]
         }
       }
     },
@@ -182,7 +182,7 @@
       "locations": {
         "sea": {
           "adjacency": ["Cly", "Edi", "NTH", "NWY", "BAR", "NAO"],
-          "unit_coords": [0, 0]
+          "unit_coords": [226, 70]
         }
       }
     },
@@ -191,15 +191,15 @@
       "type": "COASTAL",
       "is_supply_center": true,
       "hex_ID": "000009",
-      "supply_center_coords": [0, 0],
+      "supply_center_coords": [190, 412],
       "locations": {
         "land": {
           "adjacency": ["Bur", "Gas", "Pie", "Spa"],
-          "unit_coords": [0, 0]
+          "unit_coords": [179, 412]
         },
         "coast": {
           "adjacency": ["LYO", "Spa"],
-          "unit_coords": [0, 0]
+          "unit_coords": [179, 412]
         }
       }
     },
@@ -208,15 +208,15 @@
       "type": "COASTAL",
       "is_supply_center": true,
       "hex_ID": "00000A",
-      "supply_center_coords": [0, 0],
+      "supply_center_coords": [254, 278],
       "locations": {
         "land": {
           "adjacency": ["Hol", "Ruh", "Mun", "Ber"],
-          "unit_coords": [0, 0]
+          "unit_coords": [243, 285]
         },
         "coast": {
           "adjacency": ["HEL", "BAL", "Den"],
-          "unit_coords": [0, 0]
+          "unit_coords": [243, 285]
         }
       }
     },
@@ -228,7 +228,7 @@
       "locations": {
         "sea": {
           "adjacency": ["NAO", "IRI", "ENG", "Bre", "Gas", "Spa", "Por", "Naf", "WES"],
-          "unit_coords": [0, 0]
+          "unit_coords": [56, 355]
         }
       }
     },
@@ -237,15 +237,15 @@
       "type": "COASTAL",
       "is_supply_center": true,
       "hex_ID": "00000C",
-      "supply_center_coords": [0, 0],
+      "supply_center_coords": [375, 504],
       "locations": {
         "land": {
           "adjacency": ["Alb", "Ser", "Bul"],
-          "unit_coords": [0, 0]
+          "unit_coords": [358, 490]
         },
         "coast": {
           "adjacency": ["ION", "AEG", "Bul"],
-          "unit_coords": [0, 0]
+          "unit_coords": [358, 490]
         }
       }
     },
@@ -257,7 +257,7 @@
       "locations": {
         "sea": {
           "adjacency": ["Cly", "Lvp", "IRI", "MAO", "NWG"],
-          "unit_coords": [0, 0]
+          "unit_coords": [71, 180]
         }
       }
     },
@@ -269,11 +269,11 @@
       "locations": {
         "land": {
           "adjacency": ["Edi", "Lvp"],
-          "unit_coords": [0, 0]
+          "unit_coords": [139, 201]
         },
         "coast": {
           "adjacency": ["NAO", "NWG"],
-          "unit_coords": [0, 0]
+          "unit_coords": [139, 201]
         }
       }
     },
@@ -282,15 +282,15 @@
       "type": "COASTAL",
       "is_supply_center": true,
       "hex_ID": "00000F",
-      "supply_center_coords": [0, 0],
+      "supply_center_coords": [202, 281],
       "locations": {
         "land": {
           "adjacency": ["Bel", "Ruh", "Kie"],
-          "unit_coords": [0, 0]
+          "unit_coords": [216, 290]
         },
         "coast": {
           "adjacency": ["NTH", "HEL"],
-          "unit_coords": [0, 0]
+          "unit_coords": [216, 290]
         }
       }
     },
@@ -299,15 +299,15 @@
       "type": "COASTAL",
       "is_supply_center": true,
       "hex_ID": "000010",
-      "supply_center_coords": [0, 0],
+      "supply_center_coords": [320, 193],
       "locations": {
         "land": {
           "adjacency": ["NWY", "Fin"],
-          "unit_coords": [0, 0]
+          "unit_coords": [306, 170]
         },
         "coast": {
           "adjacency": ["SKA", "BAL", "BOT", "Den"],
-          "unit_coords": [0, 0]
+          "unit_coords": [306, 170]
         }
       }
     },
@@ -316,15 +316,15 @@
       "type": "COASTAL",
       "is_supply_center": true,
       "hex_ID": "000011",
-      "supply_center_coords": [0, 0],
+      "supply_center_coords": [482, 469],
       "locations": {
         "land": {
           "adjacency": ["Con", "Smy", "Arm"],
-          "unit_coords": [0, 0]
+          "unit_coords": [516, 455]
         },
         "coast": {
           "adjacency": ["BLA"],
-          "unit_coords": [0, 0]
+          "unit_coords": [516, 455]
         }
       }
     },
@@ -336,11 +336,11 @@
       "locations": {
         "land": {
           "adjacency": ["Sev", "Smy", "Syr"],
-          "unit_coords": [0, 0]
+          "unit_coords": [591, 467]
         },
         "coast": {
           "adjacency": ["BLA"],
-          "unit_coords": [0, 0]
+          "unit_coords": [591, 467]
         }
       }
     },
@@ -349,11 +349,11 @@
       "type": "LAND",
       "is_supply_center": true,
       "hex_ID": "000013",
-      "supply_center_coords": [0, 0],
+      "supply_center_coords": [326, 376],
       "locations": {
         "land": {
           "adjacency": ["Vie", "Gal", "Rum", "Ser"],
-          "unit_coords": [0, 0]
+          "unit_coords": [356, 390]
         }
       }
     },
@@ -365,7 +365,7 @@
       "locations": {
         "land": {
           "adjacency": ["Pic", "Par", "Gas", "Mar", "Ruh", "Mun", "Bel"],
-          "unit_coords": [0, 0]
+          "unit_coords": [191, 371]
         }
       }
     },
@@ -377,11 +377,11 @@
       "locations": {
         "land": {
           "adjacency": ["Bre", "Par", "Bur", "Bel"],
-          "unit_coords": [0, 0]
+          "unit_coords": [174, 326]
         },
         "coast": {
           "adjacency": ["ENG"],
-          "unit_coords": [0, 0]
+          "unit_coords": [174, 326]
         }
       }
     },
@@ -390,15 +390,15 @@
       "type": "COASTAL",
       "is_supply_center": true,
       "hex_ID": "000016",
-      "supply_center_coords": [0, 0],
+      "supply_center_coords": [263, 390],
       "locations": {
         "land": {
           "adjacency": ["Pie", "Tyr", "Tri", "Rom", "Apu"],
-          "unit_coords": [0, 0]
+          "unit_coords": [251, 407]
         },
         "coast": {
           "adjacency": ["ADR"],
-          "unit_coords": [0, 0]
+          "unit_coords": [251, 407]
         }
       }
     },
@@ -410,7 +410,7 @@
       "locations": {
         "land": {
           "adjacency": ["Mos", "War", "Gal", "Rum", "Sev"],
-          "unit_coords": [0, 0]
+          "unit_coords": [426, 340]
         }
       }
     },
@@ -422,7 +422,7 @@
       "locations": {
         "land": {
           "adjacency": ["Bel", "Hol", "Kie", "Mun", "Bur"],
-          "unit_coords": [0, 0]
+          "unit_coords": [221, 330]
         }
       }
     },
@@ -431,19 +431,19 @@
       "type": "COASTAL",
       "is_supply_center": true,
       "hex_ID": "000019",
-      "supply_center_coords": [0, 0],
+      "supply_center_coords": [418, 187],
       "locations": {
         "land": {
           "adjacency": ["Fin", "Mos", "Lvn", "NWY"],
-          "unit_coords": [0, 0]
+          "unit_coords": [466, 149]
         },
         "coast_south": {
           "adjacency": ["BOT", "Lvn"],
-          "unit_coords": [0, 0]
+          "unit_coords": [466, 149]
         },
         "coast_north": {
           "adjacency": ["BAR", "NWY"],
-          "unit_coords": [0, 0]
+          "unit_coords": [466, 149]
         }
       }
     },
@@ -452,15 +452,15 @@
       "type": "COASTAL",
       "is_supply_center": true,
       "hex_ID": "00001A",
-      "supply_center_coords": [0, 0],
+      "supply_center_coords": [269, 249],
       "locations": {
         "land": {
           "adjacency": ["Kie"],
-          "unit_coords": [0, 0]
+          "unit_coords": [256, 235]
         },
         "coast": {
           "adjacency": ["NTH", "HEL", "BAL", "SKA", "Swe"],
-          "unit_coords": [0, 0]
+          "unit_coords": [256, 235]
         }
       }
     },
@@ -469,11 +469,11 @@
       "type": "LAND",
       "is_supply_center": true,
       "hex_ID": "00001B",
-      "supply_center_coords": [0, 0],
+      "supply_center_coords": [177, 338],
       "locations": {
         "land": {
           "adjacency": ["Bre", "Pic", "Bur", "Gas"],
-          "unit_coords": [0, 0]
+          "unit_coords": [161, 358]
         }
       }
     },
@@ -485,11 +485,11 @@
       "locations": {
         "land": {
           "adjacency": ["Stp", "NWY"],
-          "unit_coords": [0, 0]
+          "unit_coords": [381, 160]
         },
         "coast": {
           "adjacency": ["BOT", "Swe"],
-          "unit_coords": [0, 0]
+          "unit_coords": [381, 160]
         }
       }
     },
@@ -501,7 +501,7 @@
       "locations": {
         "sea": {
           "adjacency": ["Lon", "Wal", "Bre", "Pic", "Bel", "NTH", "IRI", "MAO"],
-          "unit_coords": [0, 0]
+          "unit_coords": [141, 306]
         }
       }
     },
@@ -513,11 +513,11 @@
       "locations": {
         "land": {
           "adjacency": ["Edi", "Lvp", "Wal", "Lon"],
-          "unit_coords": [0, 0]
+          "unit_coords": [161, 254]
         },
         "coast": {
           "adjacency": ["NTH"],
-          "unit_coords": [0, 0]
+          "unit_coords": [161, 254]
         }
       }
     },
@@ -526,11 +526,11 @@
       "type": "LAND",
       "is_supply_center": true,
       "hex_ID": "00001F",
-      "supply_center_coords": [0, 0],
+      "supply_center_coords": [258, 359],
       "locations": {
         "land": {
           "adjacency": ["Ruh", "Bur", "Tyr", "Boh", "Sil", "Ber", "Kie"],
-          "unit_coords": [0, 0]
+          "unit_coords": [241, 360]
         }
       }
     },
@@ -542,11 +542,11 @@
       "locations": {
         "land": {
           "adjacency": ["Lvp", "Yor", "Lon"],
-          "unit_coords": [0, 0]
+          "unit_coords": [136, 275]
         },
         "coast": {
           "adjacency": ["IRI", "ENG"],
-          "unit_coords": [0, 0]
+          "unit_coords": [136, 275]
         }
       }
     },
@@ -558,7 +558,7 @@
       "locations": {
         "sea": {
           "adjacency": ["Den", "Kie", "Ber", "Pru", "Lvn", "BOT", "Swe"],
-          "unit_coords": [0, 0]
+          "unit_coords": [314, 260]
         }
       }
     },
@@ -570,11 +570,11 @@
       "locations": {
         "land": {
           "adjacency": ["Mar", "Tyr", "Ven"],
-          "unit_coords": [0, 0]
+          "unit_coords": [221, 408]
         },
         "coast": {
           "adjacency": ["LYO"],
-          "unit_coords": [0, 0]
+          "unit_coords": [221, 408]
         }
       }
     },
@@ -583,11 +583,11 @@
       "type": "LAND",
       "is_supply_center": true,
       "hex_ID": "000023",
-      "supply_center_coords": [0, 0],
+      "supply_center_coords": [340, 416],
       "locations": {
         "land": {
           "adjacency": ["Bud", "Rum", "Bul", "Gre", "Alb", "Tri"],
-          "unit_coords": [0, 0]
+          "unit_coords": [343, 436]
         }
       }
     },
@@ -599,7 +599,7 @@
       "locations": {
         "sea": {
           "adjacency": ["NTH", "NWY", "Swe", "Den"],
-          "unit_coords": [0, 0]
+          "unit_coords": [261, 220]
         }
       }
     },
@@ -611,7 +611,7 @@
       "locations": {
         "sea": {
           "adjacency": ["Swe", "Fin", "Stp", "Lvn", "BAL"],
-          "unit_coords": [0, 0]
+          "unit_coords": [334, 175]
         }
       }
     },
@@ -620,15 +620,15 @@
       "type": "COASTAL",
       "is_supply_center": true,
       "hex_ID": "000026",
-      "supply_center_coords": [0, 0],
+      "supply_center_coords": [281, 298],
       "locations": {
         "land": {
           "adjacency": ["Kie", "Pru", "Sil", "Mun"],
-          "unit_coords": [0, 0]
+          "unit_coords": [278, 292]
         },
         "coast": {
           "adjacency": ["BAL"],
-          "unit_coords": [0, 0]
+          "unit_coords": [278, 292]
         }
       }
     },
@@ -640,7 +640,7 @@
       "locations": {
         "sea": {
           "adjacency": ["Spa", "Mar", "Pie", "Tus", "TYS", "WES"],
-          "unit_coords": [0, 0]
+          "unit_coords": [176, 457]
         }
       }
     },
@@ -649,15 +649,15 @@
       "type": "COASTAL",
       "is_supply_center": true,
       "hex_ID": "000028",
-      "supply_center_coords": [0, 0],
+      "supply_center_coords": [424, 502],
       "locations": {
         "land": {
           "adjacency": ["Con", "Ank", "Arm", "Syr"],
-          "unit_coords": [0, 0]
+          "unit_coords": [466, 510]
         },
         "coast": {
           "adjacency": ["AEG", "EAS"],
-          "unit_coords": [0, 0]
+          "unit_coords": [466, 510]
         }
       }
     },
@@ -669,7 +669,7 @@
       "locations": {
         "sea": {
           "adjacency": ["Apu", "Nap", "TYS", "Tun", "AEG", "Gre", "Alb", "ADR"],
-          "unit_coords": [0, 0]
+          "unit_coords": [321, 520]
         }
       }
     },
@@ -681,11 +681,11 @@
       "locations": {
         "land": {
           "adjacency": ["Ber", "Sil", "War", "Lvn"],
-          "unit_coords": [0, 0]
+          "unit_coords": [341, 283]
         },
         "coast": {
           "adjacency": ["BAL"],
-          "unit_coords": [0, 0]
+          "unit_coords": [341, 283]
         }
       }
     },
@@ -697,7 +697,7 @@
       "locations": {
         "land": {
           "adjacency": ["War", "Ukr", "Rum", "Bud", "Vie", "Boh", "Sil"],
-          "unit_coords": [0, 0]
+          "unit_coords": [361, 343]
         }
       }
     },
@@ -706,15 +706,15 @@
       "type": "COASTAL",
       "is_supply_center": true,
       "hex_ID": "00002C",
-      "supply_center_coords": [0, 0],
+      "supply_center_coords": [156, 289],
       "locations": {
         "land": {
           "adjacency": ["Yor", "Wal"],
-          "unit_coords": [0, 0]
+          "unit_coords": [166, 280]
         },
         "coast": {
           "adjacency": ["ENG", "NTH"],
-          "unit_coords": [0, 0]
+          "unit_coords": [166, 280]
         }
       }
     },
@@ -726,11 +726,11 @@
       "locations": {
         "land": {
           "adjacency": ["Tun"],
-          "unit_coords": [0, 0]
+          "unit_coords": [136, 536]
         },
         "coast": {
           "adjacency": ["MAO", "WES"],
-          "unit_coords": [0, 0]
+          "unit_coords": [136, 536]
         }
       }
     },
@@ -739,15 +739,15 @@
       "type": "COASTAL",
       "is_supply_center": true,
       "hex_ID": "00002E",
-      "supply_center_coords": [0, 0],
+      "supply_center_coords": [399, 410],
       "locations": {
         "land": {
           "adjacency": ["Bud", "Gal", "Ukr", "Sev", "Bul", "Ser"],
-          "unit_coords": [0, 0]
+          "unit_coords": [416, 415]
         },
         "coast": {
           "adjacency": ["BLA"],
-          "unit_coords": [0, 0]
+          "unit_coords": [416, 415]
         }
       }
     },
@@ -759,7 +759,7 @@
       "locations": {
         "land": {
           "adjacency": ["Mun", "Sil", "Gal", "Vie", "Tyr"],
-          "unit_coords": [0, 0]
+          "unit_coords": [289, 347]
         }
       }
     },
@@ -771,7 +771,7 @@
       "locations": {
         "sea": {
           "adjacency": ["NTH", "Den", "Kie", "Hol"],
-          "unit_coords": [0, 0]
+          "unit_coords": [226, 265]
         }
       }
     },
@@ -780,15 +780,15 @@
       "type": "COASTAL",
       "is_supply_center": true,
       "hex_ID": "000031",
-      "supply_center_coords": [0, 0],
+      "supply_center_coords": [479, 393],
       "locations": {
         "land": {
           "adjacency": ["Mos", "Ukr", "Rum"],
-          "unit_coords": [0, 0]
+          "unit_coords": [546, 350]
         },
         "coast": {
           "adjacency": ["BLA", "Arm"],
-          "unit_coords": [0, 0]
+          "unit_coords": [546, 350]
         }
       }
     },
@@ -797,15 +797,15 @@
       "type": "COASTAL",
       "is_supply_center": true,
       "hex_ID": "000032",
-      "supply_center_coords": [0, 0],
+      "supply_center_coords": [154, 219],
       "locations": {
         "land": {
           "adjacency": ["Cly", "Lvp", "Yor"],
-          "unit_coords": [0, 0]
+          "unit_coords": [158, 202]
         },
         "coast": {
           "adjacency": ["NWG", "NTH"],
-          "unit_coords": [0, 0]
+          "unit_coords": [158, 202]
         }
       }
     },
@@ -814,19 +814,19 @@
       "type": "COASTAL",
       "is_supply_center": true,
       "hex_ID": "000033",
-      "supply_center_coords": [0, 0],
+      "supply_center_coords": [77, 429],
       "locations": {
         "land": {
           "adjacency": ["Gas", "Mar", "Por"],
-          "unit_coords": [0, 0]
+          "unit_coords": [91, 450]
         },
         "coast_north": {
           "adjacency": ["MAO", "Gas"],
-          "unit_coords": [0, 0]
+          "unit_coords": [91, 450]
         },
         "coast_south": {
           "adjacency": ["WES", "LYO", "Mar"],
-          "unit_coords": [0, 0]
+          "unit_coords": [91, 450]
         }
       }
     },
@@ -835,19 +835,19 @@
       "type": "COASTAL",
       "is_supply_center": true,
       "hex_ID": "000034",
-      "supply_center_coords": [0, 0],
+      "supply_center_coords": [374, 441],
       "locations": {
         "land": {
           "adjacency": ["Rum", "Ser", "Gre", "Con"],
-          "unit_coords": [0, 0]
+          "unit_coords": [401, 443]
         },
         "coast_east": {
           "adjacency": ["BLA"],
-          "unit_coords": [0, 0]
+          "unit_coords": [401, 443]
         },
         "coast_south": {
           "adjacency": ["AEG", "Con", "Gre"],
-          "unit_coords": [0, 0]
+          "unit_coords": [401, 443]
         }
       }
     },
@@ -856,11 +856,11 @@
       "type": "LAND",
       "is_supply_center": true,
       "hex_ID": "000035",
-      "supply_center_coords": [0, 0],
+      "supply_center_coords": [343, 302],
       "locations": {
         "land": {
           "adjacency": ["Pru", "Lvn", "Mos", "Ukr", "Gal", "Sil"],
-          "unit_coords": [0, 0]
+          "unit_coords": [361, 304]
         }
       }
     },
@@ -872,7 +872,7 @@
       "locations": {
         "sea": {
           "adjacency": ["Stp", "NWY", "NWG"],
-          "unit_coords": [0, 0]
+          "unit_coords": [446, 15]
         }
       }
     },
@@ -881,11 +881,11 @@
       "type": "LAND",
       "is_supply_center": true,
       "hex_ID": "000037",
-      "supply_center_coords": [0, 0],
+      "supply_center_coords": [298, 363],
       "locations": {
         "land": {
           "adjacency": ["Boh", "Gal", "Bud", "Tri", "Tyr"],
-          "unit_coords": [0, 0]
+          "unit_coords": [313, 370]
         }
       }
     },
@@ -897,11 +897,11 @@
       "locations": {
         "land": {
           "adjacency": ["Ven", "Rom", "Nap"],
-          "unit_coords": [0, 0]
+          "unit_coords": [297, 470]
         },
         "coast": {
           "adjacency": ["ADR", "ION"],
-          "unit_coords": [0, 0]
+          "unit_coords": [297, 470]
         }
       }
     },
@@ -910,15 +910,15 @@
       "type": "COASTAL",
       "is_supply_center": true,
       "hex_ID": "000039",
-      "supply_center_coords": [0, 0],
+      "supply_center_coords": [268, 448],
       "locations": {
         "land": {
           "adjacency": ["Tus", "Ven", "Apu", "Nap"],
-          "unit_coords": [0, 0]
+          "unit_coords": [268, 457]
         },
         "coast": {
           "adjacency": ["TYS"],
-          "unit_coords": [0, 0]
+          "unit_coords": [268, 457]
         }
       }
     },
@@ -927,15 +927,15 @@
       "type": "COASTAL",
       "is_supply_center": true,
       "hex_ID": "00003A",
-      "supply_center_coords": [0, 0],
+      "supply_center_coords": [217, 526],
       "locations": {
         "land": {
           "adjacency": ["Naf"],
-          "unit_coords": [0, 0]
+          "unit_coords": [216, 555]
         },
         "coast": {
           "adjacency": ["WES", "TYS", "ION"],
-          "unit_coords": [0, 0]
+          "unit_coords": [216, 555]
         }
       }
     },
@@ -944,11 +944,11 @@
       "type": "LAND",
       "is_supply_center": true,
       "hex_ID": "00003B",
-      "supply_center_coords": [0, 0],
+      "supply_center_coords": [481, 234],
       "locations": {
         "land": {
           "adjacency": ["Stp", "Lvn", "War", "Ukr", "Sev"],
-          "unit_coords": [0, 0]
+          "unit_coords": [466, 265]
         }
       }
     },
@@ -960,7 +960,7 @@
       "locations": {
         "sea": {
           "adjacency": ["Spa", "LYO", "TYS", "Tun", "Naf", "MAO"],
-          "unit_coords": [0, 0]
+          "unit_coords": [166, 491]
         }
       }
     },
@@ -972,11 +972,11 @@
       "locations": {
         "land": {
           "adjacency": ["Stp", "Mos", "War", "Pru"],
-          "unit_coords": [0, 0]
+          "unit_coords": [386, 260]
         },
         "coast": {
           "adjacency": ["BAL", "BOT"],
-          "unit_coords": [0, 0]
+          "unit_coords": [386, 260]
         }
       }
     },
@@ -988,7 +988,7 @@
       "locations": {
         "sea": {
           "adjacency": ["Edi", "Yor", "Lon", "ENG", "Bel", "Hol", "Den", "HEL", "SKA", "NWY"],
-          "unit_coords": [0, 0]
+          "unit_coords": [196, 230]
         }
       }
     },
@@ -997,15 +997,15 @@
       "type": "COASTAL",
       "is_supply_center": true,
       "hex_ID": "00003F",
-      "supply_center_coords": [0, 0],
+      "supply_center_coords": [267, 184],
       "locations": {
         "land": {
           "adjacency": ["Fin", "Stp", "Swe"],
-          "unit_coords": [0, 0]
+          "unit_coords": [256, 175]
         },
         "coast": {
           "adjacency": ["NWG", "BAR", "NTH", "SKA"],
-          "unit_coords": [0, 0]
+          "unit_coords": [256, 175]
         }
       }
     },
@@ -1017,7 +1017,7 @@
       "locations": {
         "sea": {
           "adjacency": ["Gre", "Bul", "Con", "Smy", "EAS", "ION"],
-          "unit_coords": [0, 0]
+          "unit_coords": [398, 510]
         }
       }
     },
@@ -1026,15 +1026,15 @@
       "type": "COASTAL",
       "is_supply_center": true,
       "hex_ID": "000041",
-      "supply_center_coords": [0, 0],
+      "supply_center_coords": [12, 431],
       "locations": {
         "land": {
           "adjacency": ["Spa"],
-          "unit_coords": [0, 0]
+          "unit_coords": [28, 440]
         },
         "coast": {
           "adjacency": ["MAO"],
-          "unit_coords": [0, 0]
+          "unit_coords": [28, 440]
         }
       }
     },
@@ -1046,7 +1046,7 @@
       "locations": {
         "sea": {
           "adjacency": ["Lvp", "Wal", "ENG", "NAO", "MAO"],
-          "unit_coords": [0, 0]
+          "unit_coords": [101, 270]
         }
       }
     },
@@ -1058,11 +1058,11 @@
       "locations": {
         "land": {
           "adjacency": ["Tri", "Ser", "Gre"],
-          "unit_coords": [0, 0]
+          "unit_coords": [339, 460]
         },
         "coast": {
           "adjacency": ["ADR", "ION"],
-          "unit_coords": [0, 0]
+          "unit_coords": [339, 460]
         }
       }
     },
@@ -1074,11 +1074,11 @@
       "locations": {
         "land": {
           "adjacency": ["Smy", "Arm"],
-          "unit_coords": [0, 0]
+          "unit_coords": [576, 535]
         },
         "coast": {
           "adjacency": ["EAS"],
-          "unit_coords": [0, 0]
+          "unit_coords": [576, 535]
         }
       }
     },
@@ -1090,11 +1090,11 @@
       "locations": {
         "land": {
           "adjacency": ["Bre", "Par", "Bur", "Mar", "Spa"],
-          "unit_coords": [0, 0]
+          "unit_coords": [136, 400]
         },
         "coast": {
           "adjacency": ["MAO", "Spa"],
-          "unit_coords": [0, 0]
+          "unit_coords": [136, 400]
         }
       }
     },
@@ -1103,15 +1103,15 @@
       "type": "COASTAL",
       "is_supply_center": true,
       "hex_ID": "000046",
-      "supply_center_coords": [0, 0],
+      "supply_center_coords": [106, 322],
       "locations": {
         "land": {
           "adjacency": ["Pic", "Par", "Gas"],
-          "unit_coords": [0, 0]
+          "unit_coords": [136, 345]
         },
         "coast": {
           "adjacency": ["MAO", "ENG"],
-          "unit_coords": [0, 0]
+          "unit_coords": [136, 345]
         }
       }
     },
@@ -1123,7 +1123,7 @@
       "locations": {
         "land": {
           "adjacency": ["Mun", "Boh", "Vie", "Tri", "Ven", "Pie"],
-          "unit_coords": [0, 0]
+          "unit_coords": [261, 380]
         }
       }
     },
@@ -1135,7 +1135,7 @@
       "locations": {
         "land": {
           "adjacency": ["Mun", "Ber", "Pru", "War", "Gal", "Boh"],
-          "unit_coords": [0, 0]
+          "unit_coords": [310, 325]
         }
       }
     },
@@ -1147,7 +1147,7 @@
       "locations": {
         "sea": {
           "adjacency": ["Smy", "Syr", "AEG", "ION"],
-          "unit_coords": [0, 0]
+          "unit_coords": [461, 550]
         }
       }
     },
@@ -1156,15 +1156,15 @@
       "type": "COASTAL",
       "is_supply_center": true,
       "hex_ID": "00004A",
-      "supply_center_coords": [0, 0],
+      "supply_center_coords": [142, 253],
       "locations": {
         "land": {
           "adjacency": ["Cly", "Edi", "Yor", "Wal"],
-          "unit_coords": [0, 0]
+          "unit_coords": [140, 226]
         },
         "coast": {
           "adjacency": ["NAO", "IRI"],
-          "unit_coords": [0, 0]
+          "unit_coords": [140, 226]
         }
       }
     },
@@ -1176,7 +1176,7 @@
       "locations": {
         "sea": {
           "adjacency": ["Sev", "Arm", "Ank", "Con", "Bul", "Rum"],
-          "unit_coords": [0, 0]
+          "unit_coords": [506, 418]
         }
       }
     }

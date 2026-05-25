@@ -160,7 +160,7 @@
   </g>
   <g id="Mun">
     <path class="brown" d="m234 366 9 4 3-1 4 2 17-3 4 2-2-8h6l6-6-5-10-8-3-4-14 2-4 12 1 10-5-4-7 4-9-25 5-20 12h-6l-18 22-8 2 2 6-4 11 13 2 3-3 7 1Z"/>
-    <rect id="sc_Mun" class="unit_gray" width="6" height="6" x="258" y="359"/>
+    <rect id="sc_Mun" class="unit_none" width="6" height="6" x="258" y="359"/>
     <text transform="matrix(1,0,0,1,241,360)"><tspan x="0" y="0" class="t1">Mun</tspan></text>
   </g>
   <g id="Wal">
@@ -190,7 +190,7 @@
   </g>
   <g id="Ber">
     <path class="brown" d="m294 275-8-1 1-7-7-1-14 9v8l-4 4 2 6-3 3 2 14 25-5 8-5 1-4-5-6Z"/>
-    <rect id="sc_Ber" class="unit_gray" width="6" height="6" x="281" y="298"/>
+    <rect id="sc_Ber" class="unit_none" width="6" height="6" x="281" y="298"/>
     <text transform="matrix(1,0,0,1,278,292)"><tspan x="0" y="0" class="t1">Ber</tspan></text>
   </g>
   <g id="LYO">

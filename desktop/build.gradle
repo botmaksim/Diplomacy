@@ -20,5 +20,9 @@ dependencies {
 }
 
 application {
-    mainClass = 'com.diplomacy.desktop.controllers.DesktopLauncher'
+    mainClass = 'com.diplomacy.DesktopLauncher'
+}
+
+tasks.withType(JavaExec) {
+    systemProperty "file.encoding", "UTF-8"
 }

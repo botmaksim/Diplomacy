@@ -74,7 +74,7 @@ set CLASSPATH=%APP_HOME%\lib\desktop-1.0.0.jar;%APP_HOME%\lib\javafx-fxml-21-win
 
 
 @rem Execute desktop
-"%JAVA_EXE%" %DEFAULT_JVM_OPTS% %JAVA_OPTS% %DESKTOP_OPTS%  -classpath "%CLASSPATH%" com.diplomacy.desktop.controllers.DesktopLauncher %*
+"%JAVA_EXE%" %DEFAULT_JVM_OPTS% %JAVA_OPTS% %DESKTOP_OPTS%  -classpath "%CLASSPATH%" com.diplomacy.DesktopLauncher %*
 
 :end
 @rem End local scope for the variables with windows NT shell

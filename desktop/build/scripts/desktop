@@ -212,7 +212,7 @@ DEFAULT_JVM_OPTS=""
 
 set -- \
         -classpath "$CLASSPATH" \
-        com.diplomacy.desktop.controllers.DesktopLauncher \
+        com.diplomacy.DesktopLauncher \
         "$@"
 
 # Stop when "xargs" is not available.

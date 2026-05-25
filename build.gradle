@@ -6,3 +6,7 @@ subprojects {
 tasks.register('clean', Delete) {
     delete rootProject.layout.buildDirectory
 }
+
+tasks.withType(JavaExec) {
+    systemProperty "file.encoding", "UTF-8"
+}

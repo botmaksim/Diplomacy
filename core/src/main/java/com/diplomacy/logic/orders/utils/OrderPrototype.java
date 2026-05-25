@@ -73,13 +73,14 @@ public class OrderPrototype {
     }
 
     public boolean isSetAdditionalUnit() {
-        return additionalUnit == null;
+        return additionalUnit != null;
     }
 
     public void Clear() {
         selectedLocation = null;
         orderType = null;
         destination = null;
+        additionalUnit = null;
         player = null;
     }
 }

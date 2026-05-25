@@ -19,9 +19,13 @@ import com.diplomacy.logic.player.Player;
 import com.diplomacy.logic.units.Unit;
 
 import javafx.fxml.FXML;
+import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.control.ListView;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
+import javafx.scene.shape.Rectangle;
 
 public class GameViewController {
 
@@ -33,44 +37,74 @@ public class GameViewController {
     private MapInputHandler inputHandler;
     private OrderController orderController;
 
-    // имена файлов ресурсов (лежат в desktop/src/main/resources/maps/)
     private final String mapSvgName = "map_europe_1900.svg";
     private final String mapMaskName = "map_mask_europe_1900.png";
 
     @FXML
     public void initialize() {
-        // 1. Загружаем карту (модель)
         GameMap gameMap = MapLoader.load();
+        System.out.println("Map loaded");
 
-        // 2. Создаём игроков (пока заглушка — только две страны)
         List<Player> players = new ArrayList<>();
         players.add(new Player(gameMap.getCountry("France"), new Password("12345")));
-        //players.add(new Player("player 1", gameMap.getCountry("France")));
-        //players.add(new Player("player 2", gameMap.getCountry("England")));
-        // TODO: добавить остальные страны, либо загружать из конфига
+        players.add(new Player(gameMap.getCountry("England"), new Password("12345")));
+        players.add(new Player(gameMap.getCountry("Italy"), new Password("12345")));
+        players.add(new Player(gameMap.getCountry("Russia"), new Password("12345")));
+        players.add(new Player(gameMap.getCountry("Turkey"), new Password("12345")));
+        System.out.println("Players created");
 
-        // 3. Создаём GameMaster и расставляем юниты
         gameMaster = new GameMaster(players, gameMap, null);
         gameMaster.initializeStartPositions();
+        System.out.println("GameMaster initialized");
 
-        // 4. Загружаем UI-данные (координаты, hex_ID)
         Map<String, Map<String, Object>> rawUi = MapLoader.loadUiData();
         Image mask = new Image(getClass().getResourceAsStream("/maps/" + mapMaskName));
         Map<Integer, Province> colorToProvince = buildColorMapping(rawUi, gameMap);
         Map<String, List<double[]>> unitCoordinates = extractUnitCoords(rawUi);
         Set<String> provinceIds = rawUi.keySet();
 
-        // 5. Загружаем SVG карты – теперь через новую библиотеку
-        SVGImage svgRoot = loadSvg();
+        Node svgRoot = loadSvg();
         mapView = new MapView(svgRoot, provinceIds, unitCoordinates);
         mapContainer.getChildren().add(mapView.getView());
 
-        // 6. Создаём контроллер приказов и обработчик ввода
-        orderController = new OrderController(gameMaster, mapView, ordersListView);
-        inputHandler = new MapInputHandler(mapView, mask, colorToProvince, orderController);
+        // Обрезаем карту по размерам контейнера
+        Rectangle clipRect = new Rectangle();
+        clipRect.widthProperty().bind(mapContainer.widthProperty());
+        clipRect.heightProperty().bind(mapContainer.heightProperty());
+        mapContainer.setClip(clipRect);
 
-        // 7. Отрисовываем начальное положение юнитов
+        // Один слушатель: подгонка карты при старте и при изменении размеров окна
+        mapContainer.layoutBoundsProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal.getWidth() > 0 && newVal.getHeight() > 0) {
+                mapView.fitToContainer(newVal.getWidth(), newVal.getHeight());
+            }
+        });
+
+        orderController = new OrderController(gameMaster, mapView, ordersListView);
+        inputHandler = new MapInputHandler(mapView, mask, colorToProvince, orderController, mapView.getMapWidth(), mapView.getMapHeight());
+
         renderInitialUnits();
+
+        System.out.println("=== initialize END ===");
+    }
+
+    private Node loadSvg() {
+        try {
+            java.net.URL svgUrl = getClass().getResource("/maps/" + mapSvgName);
+            if (svgUrl == null) {
+                throw new java.io.FileNotFoundException("Файл карты не найден в ресурсах");
+            }
+            SVGImage image = SVGLoader.load(svgUrl);
+            if (image == null) throw new Exception("SVG is null");
+            return image;
+        } catch (Exception e) {
+            System.err.println("SVG не загрузился: " + e.getMessage());
+            e.printStackTrace();
+            Image img = new Image(getClass().getResourceAsStream("/maps/" + mapMaskName));
+            ImageView iv = new ImageView(img);
+            iv.setPreserveRatio(true);
+            return new Group(iv);
+        }
     }
 
     private void renderInitialUnits() {
@@ -119,28 +153,21 @@ public class GameViewController {
         return result;
     }
 
-    @FXML
-    private void onMoveButtonClick() {
-        orderController.setOrderType(OrderType.MOVE);
+    @FXML private void onMoveButtonClick() { 
+        System.out.println("HERE LOH");
+        orderController.setOrderType(OrderType.MOVE); 
     }
-
-    @FXML
-    private void onSupportButtonClick() {
-        orderController.setOrderType(OrderType.SUPPORT);
+    @FXML private void onSupportButtonClick() { 
+        orderController.setOrderType(OrderType.SUPPORT); 
     }
-
-    @FXML
-    private void onHoldButtonClick() {
+    @FXML private void onHoldButtonClick() {
         orderController.setOrderType(OrderType.HOLD);
-        orderController.processClick(null);  // немедленно создать приказ Hold
+        orderController.processClick(null);
     }
-
-    private SVGImage loadSvg() {
-        try {
-            String svgUrl = getClass().getResource("/maps/" + mapSvgName).toExternalForm();
-            return SVGLoader.load(svgUrl);
-        } catch (Exception e) {
-            throw new RuntimeException("Не удалось загрузить SVG карты: " + mapSvgName, e);
-        }
+    @FXML private void onConvoyButtonClick() { 
+        orderController.setOrderType(OrderType.CONVOY); 
+    }
+    @FXML private void onConfirmOrdersClick() {
+        System.out.println("Подтверждение приказов пока не реализовано");
     }
 }

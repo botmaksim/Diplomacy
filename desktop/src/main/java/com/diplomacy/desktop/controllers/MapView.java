@@ -1,5 +1,13 @@
 package com.diplomacy.desktop.controllers;
 
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.girod.javafx.svgimage.SVGImage;
+
 import com.diplomacy.logic.units.Army;
 import com.diplomacy.logic.units.Unit;
 
@@ -11,14 +19,9 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
+import javafx.scene.shape.Polygon;
 import javafx.scene.transform.Scale;
 import javafx.scene.transform.Translate;
-import org.girod.javafx.svgimage.SVGImage;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 public class MapView {
 
@@ -36,10 +39,18 @@ public class MapView {
     private final Map<String, Node> supplyCenterNodes = new HashMap<>();
     private final Map<Unit, ImageView> unitViews = new HashMap<>();
 
-    public MapView(SVGImage svgContent, Set<String> provinceIds,
+    private final double mapWidth = 610;
+    private final double mapHeight = 560;
+
+    // Размеры контейнера (обновляются извне)
+    private double containerWidth;
+    private double containerHeight;
+
+    public MapView(Node svgContent, Set<String> provinceIds,
                    Map<String, List<double[]>> unitCoordinates) {
         this.unitCoordinates = unitCoordinates;
-        mapGroup.getChildren().addAll(svgContent, highlightPane, unitPane, arrowGroup);
+        Node background = (svgContent != null) ? svgContent : new Group();
+        mapGroup.getChildren().addAll(background, highlightPane, unitPane, arrowGroup);
 
         highlightPane.setMouseTransparent(true);
         arrowGroup.setMouseTransparent(true);
@@ -51,16 +62,85 @@ public class MapView {
         computeProvinceCenters();
     }
 
-    private void extractProvinceNodes(SVGImage svgRoot, Set<String> provinceIds) {
-        for (String id : provinceIds) {
-            // Используем встроенный метод библиотеки для поиска по ID
-            Node provinceNode = svgRoot.getNode(id);
-            if (provinceNode != null) {
-                provinceNodes.put(id, provinceNode);
+    // ================== Подгонка под контейнер ==================
+
+    /**
+     * Устанавливает размер контейнера и автоматически центрирует карту.
+     */
+    public void setContainerSize(double width, double height) {
+        this.containerWidth = width;
+        this.containerHeight = height;
+        clampTranslation();
+    }
+
+    public void fitToContainer(double containerWidth, double containerHeight) {
+    // Проверка на случай, если размеры еще не определены
+    if (containerWidth <= 0 || containerHeight <= 0 || mapWidth <= 0 || mapHeight <= 0) {
+        return;
+    }
+
+    // Рассчитываем коэффициенты масштабирования для заполнения по ширине и по высоте
+    double scaleX = containerWidth / mapWidth;
+    double scaleY = containerHeight / mapHeight;
+
+    // Выбираем БОЛЬШИЙ из коэффициентов. Это гарантирует, что карта
+    // заполнит контейнер по одной оси и выйдет за пределы по другой.
+    double scale = Math.max(scaleX, scaleY);
+
+    // Применяем вычисленный масштаб
+    scaleTransform.setX(scale);
+    scaleTransform.setY(scale);
+
+    // Вычисляем реальные размеры карты после масштабирования
+    double scaledMapWidth = mapWidth * scale;
+    double scaledMapHeight = mapHeight * scale;
+
+    // Вычисляем смещение, необходимое для центрирования увеличенной карты.
+    // Смещение будет отрицательным или нулевым, сдвигая карту так,
+    // чтобы ее центр совпал с центром контейнера.
+    double transX = (containerWidth - scaledMapWidth) / 2;
+    double transY = (containerHeight - scaledMapHeight) / 2;
+
+    // Применяем вычисленное смещение
+    translateTransform.setX(transX);
+    translateTransform.setY(transY);
+}
+    /**
+     * Ограничивает перемещение так, чтобы карта всегда полностью заполняла контейнер
+     * (при статическом режиме просто центрирует).
+     */
+    public void clampTranslation() {
+        if (containerWidth <= 0 || containerHeight <= 0) return;
+
+        double scale = scaleTransform.getX();
+        double scaledMapW = mapWidth * scale;
+        double scaledMapH = mapHeight * scale;
+
+        // Центрируем карту независимо от размера (статический режим)
+        double currentX = (containerWidth - scaledMapW) / 2;
+        double currentY = (containerHeight - scaledMapH) / 2;
+
+        translateTransform.setX(currentX);
+        translateTransform.setY(currentY);
+    }
+
+    private void extractProvinceNodes(Node svgRoot, Set<String> provinceIds) {
+        if (svgRoot == null) return;
+
+        if (svgRoot instanceof SVGImage) {
+            SVGImage svgImage = (SVGImage) svgRoot;
+            for (String id : provinceIds) {
+                Node provinceNode = svgImage.getNode(id);
+                if (provinceNode != null) provinceNodes.put(id, provinceNode);
+                Node scNode = svgImage.getNode("sc_" + id);
+                if (scNode != null) supplyCenterNodes.put(id, scNode);
             }
-            Node scNode = svgRoot.getNode("sc_" + id);
-            if (scNode != null) {
-                supplyCenterNodes.put(id, scNode);
+        } else {
+            for (String id : provinceIds) {
+                Node provinceNode = svgRoot.lookup("#" + id);
+                if (provinceNode != null) provinceNodes.put(id, provinceNode);
+                Node scNode = svgRoot.lookup("#sc_" + id);
+                if (scNode != null) supplyCenterNodes.put(id, scNode);
             }
         }
     }
@@ -148,10 +228,41 @@ public class MapView {
     }
 
     public void drawArrow(double startX, double startY, double endX, double endY) {
+        // 1. Линия
         Line line = new Line(startX, startY, endX, endY);
         line.setStroke(Color.DARKRED);
         line.setStrokeWidth(3);
-        arrowGroup.getChildren().add(line);
+        
+        // 2. Наконечник (треугольник)
+        double arrowSize = 12.0;          // длина наконечника
+        double arrowWidth = 8.0;          // ширина основания
+        
+        // Вычисляем угол линии
+        double angle = Math.atan2(endY - startY, endX - startX);
+        
+        // Координаты основания треугольника (на конце линии)
+        double baseX = endX;
+        double baseY = endY;
+        
+        // Вершина треугольника (остриё) – можно немного отодвинуть от конца, но обычно остриё на самом конце
+        double tipX = endX;
+        double tipY = endY;
+        
+        // Левая и правая точки основания
+        double leftX = baseX - arrowSize * Math.cos(angle - Math.toRadians(30));
+        double leftY = baseY - arrowSize * Math.sin(angle - Math.toRadians(30));
+        double rightX = baseX - arrowSize * Math.cos(angle + Math.toRadians(30));
+        double rightY = baseY - arrowSize * Math.sin(angle + Math.toRadians(30));
+        
+        Polygon arrowHead = new Polygon(
+            tipX, tipY,
+            leftX, leftY,
+            rightX, rightY
+        );
+        arrowHead.setFill(Color.DARKRED);
+        
+        // 3. Добавляем в группу
+        arrowGroup.getChildren().addAll(line, arrowHead);
     }
 
     public void clearArrows() {
@@ -165,32 +276,38 @@ public class MapView {
         }
     }
 
-    public void applyZoom(double factor, double pivotX, double pivotY) {
-        double newScale = scaleTransform.getX() * factor;
-        newScale = Math.min(3.0, Math.max(0.5, newScale));
-        double realFactor = newScale / scaleTransform.getX();
+    // public void applyZoom(double factor, double pivotX, double pivotY) {
+    //     double newScale = scaleTransform.getX() * factor;
+    //     newScale = Math.min(3.0, Math.max(0.5, newScale));
+    //     double realFactor = newScale / scaleTransform.getX();
 
-        double dx = (pivotX - translateTransform.getX()) * (1 - realFactor);
-        double dy = (pivotY - translateTransform.getY()) * (1 - realFactor);
-        translateTransform.setX(translateTransform.getX() + dx);
-        translateTransform.setY(translateTransform.getY() + dy);
+    //     double dx = (pivotX - translateTransform.getX()) * (1 - realFactor);
+    //     double dy = (pivotY - translateTransform.getY()) * (1 - realFactor);
+    //     translateTransform.setX(translateTransform.getX() + dx);
+    //     translateTransform.setY(translateTransform.getY() + dy);
 
-        scaleTransform.setX(newScale);
-        scaleTransform.setY(newScale);
-    }
+    //     scaleTransform.setX(newScale);
+    //     scaleTransform.setY(newScale);
+    //     clampTranslation();   // ← важно
+    // }
 
-    public void applyPan(double dx, double dy) {
-        translateTransform.setX(translateTransform.getX() + dx);
-        translateTransform.setY(translateTransform.getY() + dy);
-    }
+    // public void applyPan(double dx, double dy) {
+    //     translateTransform.setX(translateTransform.getX() + dx);
+    //     translateTransform.setY(translateTransform.getY() + dy);
+    // }
 
     private Image getUnitIcon(Unit unit) {
         String type = unit instanceof Army ? "army" : "fleet";
         String path = "/images/icons/" + type + ".png";
-        try {
-            return new Image(getClass().getResourceAsStream(path));
+        try (InputStream is = getClass().getResourceAsStream(path)) {
+            if (is == null) {
+                System.err.println("Icon not found: " + path);
+                return null;
+            }
+
+            return new Image(is, 24, 24, false, true);
         } catch (Exception e) {
-            System.err.println("Missing icon: " + path);
+            System.err.println("Failed to load icon: " + path);
             return null;
         }
     }
@@ -200,5 +317,13 @@ public class MapView {
             (int)(color.getRed() * 255),
             (int)(color.getGreen() * 255),
             (int)(color.getBlue() * 255));
+    }
+
+    public double getMapWidth() {
+        return mapWidth;
+    }
+
+    public double getMapHeight() {
+        return mapHeight;
     }
 }

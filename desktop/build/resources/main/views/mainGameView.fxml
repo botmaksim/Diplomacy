@@ -12,13 +12,9 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane id="rootPane" fx:id="rootPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.diplomacy.desktop.controllers.GameViewController">
+<BorderPane id="rootPane" fx:id="rootPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.diplomacy.desktop.controllers.GameViewController">
    <center>
-      <ScrollPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-         <content>
-            <StackPane fx:id="mapContainer" prefHeight="150.0" prefWidth="200.0" />
-         </content>
-      </ScrollPane>
+      <StackPane fx:id="mapContainer" minHeight="0.0" minWidth="0.0" BorderPane.alignment="CENTER" />
    </center>
    <right>
       <VBox prefHeight="200.0" prefWidth="300.0" spacing="10.0" BorderPane.alignment="CENTER">
@@ -42,8 +38,8 @@
                <children>
                   <Button text="Hold" onAction="#onHoldButtonClick" prefWidth="65" />
                   <Button text="Move" onAction="#onMoveButtonClick" prefWidth="65" />
-                  <Button text="Support" onAction="#onSupportButtonClick" prefWidth="65" />
-                  <Button text="Convoy" onAction="#onConvoyButtonClick" prefWidth="65" />
+                  <!-- <Button text="Support" onAction="#onSupportButtonClick" prefWidth="65" /> -->
+                  <!-- <Button text="Convoy" onAction="#onConvoyButtonClick" prefWidth="65" /> -->
                </children>
             </HBox>
 
@@ -57,13 +53,12 @@
       </VBox>
    </right>
    <top>
-      <HBox prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+      <HBox alignment="CENTER_LEFT" prefWidth="200.0" BorderPane.alignment="CENTER">
+         <padding>
+            <Insets top="15.0" right="15.0" bottom="15.0" left="15.0" />
+         </padding>
          <children>
-            <Label text="Дипломатия - Текущая игра">
-               <font>
-                  <Font size="23.0" />
-               </font>
-            </Label>
+            <Label text="Дипломатия - Текущая игра">...</Label>
          </children>
       </HBox>
    </top>

@@ -27,6 +27,8 @@ public class History {
     }
 
     public HistoryPhase getLastHistoryPhase() {
+        if (history == null || history.isEmpty())
+            return null;
         return history.getLast();
     }
 
@@ -52,6 +54,8 @@ public class History {
     }
 
     public TurnClassificator getLastTurn() {
+        if (history == null || history.isEmpty())
+            return null;
         return history.getLast().getTurn();
     }
 }
