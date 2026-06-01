@@ -1,19 +1,12 @@
 package com.diplomacy.desktop.controllers;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import com.diplomacy.logic.gameControllingUnits.GameMaster;
 import com.diplomacy.logic.geography.basic.Location;
 import com.diplomacy.logic.geography.basic.Province;
 import com.diplomacy.logic.orders.Order;
-import com.diplomacy.logic.orders.movementPhaseOrders.ConvoyOrder;
-import com.diplomacy.logic.orders.movementPhaseOrders.MoveOrder;
-import com.diplomacy.logic.orders.movementPhaseOrders.SupportOrder;
-import com.diplomacy.logic.orders.retreatPhaseOrders.RetreatOrder;
-import com.diplomacy.logic.orders.spawnPhaseOrders.SpawnOrder;
 import com.diplomacy.logic.orders.utils.OrderCreator;
 import com.diplomacy.logic.orders.utils.OrderPrototype;
 import com.diplomacy.logic.orders.utils.OrderType;
@@ -25,7 +18,6 @@ import com.diplomacy.logic.units.Unit;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
@@ -35,24 +27,25 @@ public class OrderController {
 
     private final GameMaster gameMaster;
     private final MapView mapView;
-    private final ListView<String> ordersListView;
     private final TextArea logArea;
     private final OrderCreator orderCreator;
+    private final OrderLedger orderLedger;
+    private final PlayerSession playerSession;
 
     private Unit selectedUnit;
     private OrderType currentOrderType;
     private OrderPrototype currentPrototype;
     private boolean waitingForSecondaryTarget;
-    private Player currentPlayer;
-    private final Set<Player> confirmedPlayers = new HashSet<>();
 
-    public OrderController(GameMaster gm, MapView mv, ListView<String> orders, TextArea log) {
+    public OrderController(GameMaster gm, MapView mv, TextArea log,
+                           OrderLedger orderLedger, PlayerSession playerSession) {
         this.gameMaster = gm;
         this.mapView = mv;
-        this.ordersListView = orders;
         this.logArea = log;
         this.orderCreator = new OrderCreator();
         this.currentPrototype = new OrderPrototype();
+        this.orderLedger = orderLedger;
+        this.playerSession = playerSession;
     }
 
     private void log(String message) {
@@ -69,15 +62,14 @@ public class OrderController {
         log("[OrderController] Order type set to: " + type);
     }
 
-    public void setCurrentPlayer(Player player) {
-        clearSelection();
-        this.currentPlayer = player;
-        log("[OrderController] Current player set to: " + (player != null ? player.getName() : "null"));
-        rebuildOrderListAndVisuals();
-    }
-
     public OrderType getCurrentOrderType() {
         return currentOrderType;
+    }
+
+    public void clearSelection() {
+        clearCurrentOrder();
+        currentOrderType = null;
+        waitingForSecondaryTarget = false;
     }
 
     private void clearCurrentOrder() {
@@ -135,14 +127,9 @@ public class OrderController {
         }
     }
 
-    private void clearSelection() {
-        clearCurrentOrder();
-        currentOrderType = null;
-        waitingForSecondaryTarget = false;
-    }
-
     public void processClick(Province clicked) {
-        if (currentPlayer == null || confirmedPlayers.contains(currentPlayer)) {
+        Player currentPlayer = playerSession.getCurrentPlayer();
+        if (currentPlayer == null || orderLedger.isConfirmed(currentPlayer)) {
             return;
         }
 
@@ -235,6 +222,7 @@ public class OrderController {
     }
 
     private void handleUnitSelection(Province clicked) {
+        Player currentPlayer = playerSession.getCurrentPlayer();
         if (clicked == null) {
             log("[OrderController] Clicked on empty area, cannot select unit.");
             return;
@@ -258,6 +246,7 @@ public class OrderController {
     }
 
     private void handleOrderTarget(Province target) {
+        Player currentPlayer = playerSession.getCurrentPlayer();
         if (target == null) {
             log("[OrderController] Target is null, cancelling order.");
             clearCurrentOrder();
@@ -348,25 +337,8 @@ public class OrderController {
         };
     }
 
-    public boolean isOrdersConfirmed() {
-        return currentPlayer != null && confirmedPlayers.contains(currentPlayer);
-    }
-
-    public void confirmOrders() {
-        if (currentPlayer == null) return;
-        confirmedPlayers.add(currentPlayer);
-        clearCurrentOrder();
-        log("[OrderController] Orders confirmed for " + currentPlayer.getName() + ". Further changes blocked.");
-    }
-
-    public void cancelConfirmation() {
-        if (currentPlayer == null) return;
-        confirmedPlayers.remove(currentPlayer);
-        currentOrderType = null;
-        log("[OrderController] Orders confirmation cancelled for " + currentPlayer.getName() + ".");
-    }
-
     private void tryFinalizeOrder() {
+        Player currentPlayer = playerSession.getCurrentPlayer();
         PhaseType phaseType = getPhaseForOrderType(currentOrderType);
 
         VerificationResult verification = orderCreator.verifyOrder(currentPrototype, phaseType);
@@ -380,11 +352,11 @@ public class OrderController {
         Order order = orderCreator.createOrder(currentPrototype, phaseType);
         if (order != null) {
             if (selectedUnit != null) {
-                removeExistingOrdersForUnit(selectedUnit);
+                orderLedger.removeExistingOrdersForUnit(selectedUnit, currentPlayer);
             }
             log("[OrderController] Order created: " + order.getClass().getSimpleName());
-            gameMaster.addOrder(order, currentPlayer);
-            rebuildOrderListAndVisuals();
+            orderLedger.addOrder(order, currentPlayer);
+            orderLedger.rebuild(currentPlayer);
         } else {
             log("[OrderController] Failed to create order.");
             log("  orderType=" + currentPrototype.getOrderType()
@@ -397,149 +369,10 @@ public class OrderController {
         waitingForSecondaryTarget = false;
     }
 
-    private void removeExistingOrdersForUnit(Unit unit) {
-        var pending = gameMaster.getPendingOrders(currentPlayer);
-        pending.removeIf(o -> {
-            Location loc = o.getTarget();
-            if (loc == null) return false;
-            Unit u = loc.getParentProvince().getOccupyingUnit();
-            return unit.equals(u);
-        });
-    }
-
     private void highlightSupportDestinations(Unit supported) {
         for (var loc : supported.getLocation().getNeighbours()) {
             Province p = loc.getParentProvince();
             mapView.highlightProvince(p.getId(), Color.LIGHTGREEN);
         }
     }
-
-    public void removeOrder(int index) {
-        if (currentPlayer == null || confirmedPlayers.contains(currentPlayer)) return;
-        var pending = gameMaster.getPendingOrders(currentPlayer);
-        if (index < 0 || index >= pending.size()) return;
-        gameMaster.removeOrder(currentPlayer, index);
-        rebuildOrderListAndVisuals();
-        log("[OrderController] Order removed at index " + index);
-    }
-
-    public void rebuildOrderListAndVisuals() {
-        ordersListView.getItems().clear();
-        mapView.clearArrows();
-
-        if (currentPlayer == null) return;
-
-        for (Order order : gameMaster.getPendingOrders(currentPlayer)) {
-            String text = formatOrderText(order);
-            ordersListView.getItems().add(text);
-            drawOrderVisuals(order);
-        }
-    }
-
-    private String formatOrderText(Order order) {
-        if (order instanceof SpawnOrder) {
-            return "Spawn in " + order.getTarget().getParentProvince().getName();
-        }
-        String base = getUnitPrefix(order.getTarget()) + " " + order.getTarget().getParentProvince().getName();
-
-        if (order instanceof MoveOrder mo) {
-            return base + " -> " + mo.getDestination().getParentProvince().getName();
-        }
-        if (order instanceof com.diplomacy.logic.orders.movementPhaseOrders.HoldOrder) {
-            return base + " holds";
-        }
-        if (order instanceof SupportOrder so) {
-            String sup = getUnitPrefix(so.getSupportedUnit()) + " "
-                + so.getSupportedUnit().getParentProvince().getName();
-            String dest = so.getDestination() != null
-                ? so.getDestination().getParentProvince().getName() : "hold";
-            return base + " supports " + sup + " -> " + dest;
-        }
-        if (order instanceof ConvoyOrder co) {
-            String armyInfo = getUnitPrefix(co.getConvoyedArmy()) + " "
-                + co.getConvoyedArmy().getParentProvince().getName();
-            String dest = co.getDestination() != null
-                ? co.getDestination().getParentProvince().getName() : "?";
-            return base + " convoys " + armyInfo + " -> " + dest;
-        }
-        if (order instanceof com.diplomacy.logic.orders.movementPhaseOrders.BeConvoyedOrder bco) {
-            return base + " (convoyed) -> " + bco.getDestination().getParentProvince().getName();
-        }
-        if (order instanceof RetreatOrder ro) {
-            return base + " retreats -> " + ro.getDestination().getParentProvince().getName();
-        }
-        if (order instanceof com.diplomacy.logic.orders.retreatPhaseOrders.DieOrder) {
-            return base + " dies";
-        }
-        if (order instanceof com.diplomacy.logic.orders.spawnPhaseOrders.DismissOrder) {
-            return base + " dismissed";
-        }
-        return base;
-    }
-
-    private String getUnitPrefix(Location loc) {
-        if (loc == null) return "?";
-        Unit u = loc.getParentProvince().getOccupyingUnit();
-        if (u == null) return "?";
-        return u instanceof com.diplomacy.logic.units.Fleet ? "F" : "A";
-    }
-
-    private void drawOrderVisuals(Order order) {
-        if (order == null) return;
-        Location target = order.getTarget();
-        if (target == null) return;
-        String from = target.getParentProvince().getId();
-
-        if (order instanceof com.diplomacy.logic.orders.movementPhaseOrders.HoldOrder) {
-            mapView.drawHoldMarker(from);
-            return;
-        }
-        if (order instanceof MoveOrder mo) {
-            drawArrow(from, mo.getDestination().getParentProvince().getId(), OrderType.MOVE);
-            return;
-        }
-        if (order instanceof com.diplomacy.logic.orders.movementPhaseOrders.BeConvoyedOrder bco) {
-            drawArrow(from, bco.getDestination().getParentProvince().getId(), OrderType.BECONVOYED);
-            return;
-        }
-        if (order instanceof SupportOrder so) {
-            Location dest = so.getDestination();
-            if (dest != null) {
-                drawArrow(from, dest.getParentProvince().getId(), OrderType.SUPPORT);
-            }
-            return;
-        }
-        if (order instanceof ConvoyOrder co) {
-            mapView.drawConvoyMarker(from);
-            // String armyOrigin = co.getConvoyedArmy().getParentProvince().getId();
-            // mapView.drawConvoyLink(from, armyOrigin);
-            return;
-        }
-        if (order instanceof RetreatOrder ro) {
-            drawArrow(from, ro.getDestination().getParentProvince().getId(), OrderType.RETREAT);
-            return;
-        }
-        if (order instanceof com.diplomacy.logic.orders.retreatPhaseOrders.DieOrder) {
-            mapView.drawDieMarker(from);
-            return;
-        }
-        if (order instanceof com.diplomacy.logic.orders.spawnPhaseOrders.DismissOrder) {
-            mapView.drawDismissMarker(from);
-            return;
-        }
-        if (order instanceof SpawnOrder) {
-            mapView.drawSpawnMarker(from);
-            return;
-        }
-    }
-
-    private void drawArrow(String from, String to, OrderType type) {
-        mapView.drawOrderArrow(from, to, type);
-    }
-
-    private void highlightPossibleMoves() {}
-
-    private void highlightSupportCandidates() {}
-
-    private void highlightPossibleConvoys() {}
 }

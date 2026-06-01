@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import com.diplomacy.logic.geography.advanced.Country;
@@ -153,8 +152,9 @@ public class MapLoader {
             for (var locEntry : data.locations.entrySet()) {
                 String currentLocName = locEntry.getKey();
                 Location currentLocation = locationsByFullId.get(buildLocationFullId(currentProvinceId, currentLocName));
-                if (currentLocation == null) 
-                    continue;
+                if (currentLocation == null) {
+                    throw new MapLoadException("Location not found: " + buildLocationFullId(currentProvinceId, currentLocName));
+                }
 
                 List<String> adjacency = locEntry.getValue().adjacency;
                 if (adjacency == null) 
@@ -262,19 +262,21 @@ public class MapLoader {
             CountryData data = entry.getValue();
             List<Province> provinces = data.home_centers == null ? List.of() :
                     data.home_centers.stream()
-                            .map(id -> provincesById.get(id))
-                            .filter(Objects::nonNull)
+                            .map(id -> {
+                                Province p = provincesById.get(id);
+                                if (p == null) throw new MapLoadException("Home center province not found: " + id);
+                                return p;
+                            })
                             .collect(Collectors.toList());
 
             Map<Province, String> startingUnits = new HashMap<>();
             if (data.starting_units != null) {
                 data.starting_units.forEach((provinceId, unitType) -> {
                     Province province = provincesById.get(provinceId);
-                    if (province != null) {
-                        startingUnits.put(province, unitType);
-                    } else {
-                        System.out.println("Province " + provinceId + " not found for starting unit of " + data.name);
+                    if (province == null) {
+                        throw new MapLoadException("Province " + provinceId + " not found for starting unit of " + data.name);
                     }
+                    startingUnits.put(province, unitType);
                 });
             }
 

@@ -83,7 +83,7 @@
           "unit_coords": [246, 425]
         },
         "coast": {
-          "adjacency": ["TYS", "LYO"],
+          "adjacency": ["TYS", "LYO", "Pie", "Rom"],
           "unit_coords": [246, 425]
         }
       }
@@ -100,7 +100,7 @@
           "unit_coords": [443, 486]
         },
         "coast": {
-          "adjacency": ["BLA", "AEG", "Bul:coast_east", "Bul:coast_south"],
+          "adjacency": ["BLA", "AEG", "Bul:coast_east", "Bul:coast_south", "Smy", "Ank"],
           "unit_coords": [443, 486]
         }
       }
@@ -117,7 +117,7 @@
           "unit_coords": [300, 492]
         },
         "coast": {
-          "adjacency": ["TYS", "ION"],
+          "adjacency": ["TYS", "ION", "Apu", "Rom"],
           "unit_coords": [300, 492]
         }
       }
@@ -158,7 +158,7 @@
           "unit_coords": [311, 425]
         },
         "coast": {
-          "adjacency": ["ADR"],
+          "adjacency": ["ADR", "Ven", "Alb"],
           "unit_coords": [311, 425]
         }
       }
@@ -175,7 +175,7 @@
           "unit_coords": [198, 321]
         },
         "coast": {
-          "adjacency": ["NTH", "ENG"],
+          "adjacency": ["NTH", "ENG", "Pic", "Hol"],
           "unit_coords": [198, 321]
         }
       }
@@ -204,7 +204,7 @@
           "unit_coords": [179, 412]
         },
         "coast": {
-          "adjacency": ["LYO", "Spa:coast_south"],
+          "adjacency": ["LYO", "Spa:coast_south", "Pie"],
           "unit_coords": [179, 412]
         }
       }
@@ -221,7 +221,7 @@
           "unit_coords": [243, 285]
         },
         "coast": {
-          "adjacency": ["HEL", "BAL", "Den"],
+          "adjacency": ["HEL", "BAL", "Den", "Hol", "Ber"],
           "unit_coords": [243, 285]
         }
       }
@@ -250,7 +250,7 @@
           "unit_coords": [358, 490]
         },
         "coast": {
-          "adjacency": ["ION", "AEG", "Bul:coast_south"],
+          "adjacency": ["ION", "AEG", "Bul:coast_south", "Alb"],
           "unit_coords": [358, 490]
         }
       }
@@ -278,7 +278,7 @@
           "unit_coords": [139, 201]
         },
         "coast": {
-          "adjacency": ["NAO", "NWG"],
+          "adjacency": ["NAO", "NWG", "Edi", "Lvp"],
           "unit_coords": [139, 201]
         }
       }
@@ -295,7 +295,7 @@
           "unit_coords": [216, 290]
         },
         "coast": {
-          "adjacency": ["NTH", "HEL"],
+          "adjacency": ["NTH", "HEL", "Bel", "Kie"],
           "unit_coords": [216, 290]
         }
       }
@@ -312,7 +312,7 @@
           "unit_coords": [306, 170]
         },
         "coast": {
-          "adjacency": ["SKA", "BAL", "BOT", "Den"],
+          "adjacency": ["SKA", "BAL", "BOT", "Den", "Nwy", "Fin"],
           "unit_coords": [306, 170]
         }
       }
@@ -345,7 +345,7 @@
           "unit_coords": [591, 467]
         },
         "coast": {
-          "adjacency": ["BLA"],
+          "adjacency": ["BLA", "Sev", "Ank"],
           "unit_coords": [591, 467]
         }
       }
@@ -386,7 +386,7 @@
           "unit_coords": [174, 326]
         },
         "coast": {
-          "adjacency": ["ENG"],
+          "adjacency": ["ENG", "Bre", "Bel"],
           "unit_coords": [174, 326]
         }
       }
@@ -403,7 +403,7 @@
           "unit_coords": [251, 407]
         },
         "coast": {
-          "adjacency": ["ADR"],
+          "adjacency": ["ADR", "Apu", "Tri"],
           "unit_coords": [251, 407]
         }
       }
@@ -465,7 +465,7 @@
           "unit_coords": [256, 235]
         },
         "coast": {
-          "adjacency": ["NTH", "HEL", "BAL", "SKA", "Swe"],
+          "adjacency": ["NTH", "HEL", "BAL", "SKA", "Swe", "Kie"],
           "unit_coords": [256, 235]
         }
       }
@@ -522,7 +522,7 @@
           "unit_coords": [161, 254]
         },
         "coast": {
-          "adjacency": ["NTH"],
+          "adjacency": ["NTH", "Lon", "Edi"],
           "unit_coords": [161, 254]
         }
       }
@@ -551,7 +551,7 @@
           "unit_coords": [136, 275]
         },
         "coast": {
-          "adjacency": ["IRI", "ENG"],
+          "adjacency": ["IRI", "ENG", "Lon", "Lvp"],
           "unit_coords": [136, 275]
         }
       }
@@ -579,7 +579,7 @@
           "unit_coords": [221, 408]
         },
         "coast": {
-          "adjacency": ["LYO"],
+          "adjacency": ["LYO", "Mar", "Tus"],
           "unit_coords": [221, 408]
         }
       }
@@ -633,7 +633,7 @@
           "unit_coords": [278, 292]
         },
         "coast": {
-          "adjacency": ["BAL"],
+          "adjacency": ["BAL", "Kie", "Pru"],
           "unit_coords": [278, 292]
         }
       }
@@ -662,7 +662,7 @@
           "unit_coords": [466, 510]
         },
         "coast": {
-          "adjacency": ["AEG", "EAS"],
+          "adjacency": ["AEG", "EAS", "Con", "Syr"],
           "unit_coords": [466, 510]
         }
       }
@@ -690,7 +690,7 @@
           "unit_coords": [341, 283]
         },
         "coast": {
-          "adjacency": ["BAL"],
+          "adjacency": ["BAL", "Ber", "Lvn"],
           "unit_coords": [341, 283]
         }
       }
@@ -719,7 +719,7 @@
           "unit_coords": [166, 280]
         },
         "coast": {
-          "adjacency": ["ENG", "NTH"],
+          "adjacency": ["ENG", "NTH", "Yor", "Wal"],
           "unit_coords": [166, 280]
         }
       }
@@ -735,7 +735,7 @@
           "unit_coords": [136, 536]
         },
         "coast": {
-          "adjacency": ["MAO", "WES"],
+          "adjacency": ["MAO", "WES", "Tun"],
           "unit_coords": [136, 536]
         }
       }
@@ -752,7 +752,7 @@
           "unit_coords": [416, 415]
         },
         "coast": {
-          "adjacency": ["BLA"],
+          "adjacency": ["BLA", "Sev", "Bul:coast_east"],
           "unit_coords": [416, 415]
         }
       }
@@ -793,7 +793,7 @@
           "unit_coords": [546, 350]
         },
         "coast": {
-          "adjacency": ["BLA", "Arm"],
+          "adjacency": ["BLA", "Arm", "Rum"],
           "unit_coords": [546, 350]
         }
       }
@@ -810,7 +810,7 @@
           "unit_coords": [158, 202]
         },
         "coast": {
-          "adjacency": ["NWG", "NTH"],
+          "adjacency": ["NWG", "NTH", "Cly", "Yor"],
           "unit_coords": [158, 202]
         }
       }
@@ -827,11 +827,11 @@
           "unit_coords": [91, 450]
         },
         "coast_north": {
-          "adjacency": ["MAO", "Gas"],
+          "adjacency": ["MAO", "Gas", "Por"],
           "unit_coords": [91, 450]
         },
         "coast_south": {
-          "adjacency": ["WES", "LYO", "Mar"],
+          "adjacency": ["WES", "LYO", "Mar", "Por"],
           "unit_coords": [91, 450]
         }
       }
@@ -848,7 +848,7 @@
           "unit_coords": [401, 443]
         },
         "coast_east": {
-          "adjacency": ["BLA"],
+          "adjacency": ["BLA", "Rum", "Con"],
           "unit_coords": [401, 443]
         },
         "coast_south": {
@@ -906,7 +906,7 @@
           "unit_coords": [297, 470]
         },
         "coast": {
-          "adjacency": ["ADR", "ION"],
+          "adjacency": ["ADR", "ION", "Nap", "Ven"],
           "unit_coords": [297, 470]
         }
       }
@@ -923,7 +923,7 @@
           "unit_coords": [268, 457]
         },
         "coast": {
-          "adjacency": ["TYS"],
+          "adjacency": ["TYS", "Nap", "Tus"],
           "unit_coords": [268, 457]
         }
       }
@@ -940,7 +940,7 @@
           "unit_coords": [216, 555]
         },
         "coast": {
-          "adjacency": ["WES", "TYS", "ION"],
+          "adjacency": ["WES", "TYS", "ION", "Naf"],
           "unit_coords": [216, 555]
         }
       }
@@ -981,7 +981,7 @@
           "unit_coords": [386, 260]
         },
         "coast": {
-          "adjacency": ["BAL", "BOT", "Stp:coast_south"],
+          "adjacency": ["BAL", "BOT", "Stp:coast_south", "Pru"],
           "unit_coords": [386, 260]
         }
       }
@@ -1010,7 +1010,7 @@
           "unit_coords": [256, 175]
         },
         "coast": {
-          "adjacency": ["NWG", "BAR", "NTH", "SKA", "Stp:coast_north"],
+          "adjacency": ["NWG", "BAR", "NTH", "SKA", "Stp:coast_north", "Swe"],
           "unit_coords": [256, 175]
         }
       }
@@ -1067,7 +1067,7 @@
           "unit_coords": [339, 460]
         },
         "coast": {
-          "adjacency": ["ADR", "ION"],
+          "adjacency": ["ADR", "ION", "Tri", "Gre"],
           "unit_coords": [339, 460]
         }
       }
@@ -1083,7 +1083,7 @@
           "unit_coords": [576, 535]
         },
         "coast": {
-          "adjacency": ["EAS"],
+          "adjacency": ["EAS", "Smy"],
           "unit_coords": [576, 535]
         }
       }
@@ -1099,7 +1099,7 @@
           "unit_coords": [136, 400]
         },
         "coast": {
-          "adjacency": ["MAO", "Spa:coast_north"],
+          "adjacency": ["MAO", "Spa:coast_north", "Bre"],
           "unit_coords": [136, 400]
         }
       }
@@ -1116,7 +1116,7 @@
           "unit_coords": [136, 345]
         },
         "coast": {
-          "adjacency": ["MAO", "ENG"],
+          "adjacency": ["MAO", "ENG", "Pic", "Gas"],
           "unit_coords": [136, 345]
         }
       }
@@ -1169,7 +1169,7 @@
           "unit_coords": [140, 226]
         },
         "coast": {
-          "adjacency": ["NAO", "IRI"],
+          "adjacency": ["NAO", "IRI", "Cly", "Wal"],
           "unit_coords": [140, 226]
         }
       }

@@ -16,22 +16,16 @@ import com.diplomacy.logic.geography.basic.Province;
 import com.diplomacy.logic.orders.utils.OrderType;
 import com.diplomacy.logic.player.Password;
 import com.diplomacy.logic.player.Player;
-import com.diplomacy.logic.units.Army;
-import com.diplomacy.logic.units.Fleet;
 import com.diplomacy.logic.units.Unit;
 
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Group;
 import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextArea;
-import javafx.scene.Node;
 import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.image.Image;
@@ -39,8 +33,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Rectangle;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
 
 public class GameViewController {
 
@@ -58,7 +50,8 @@ public class GameViewController {
     private MapView mapView;
     private MapInputHandler inputHandler;
     private OrderController orderController;
-    private Player currentPlayer;
+    private OrderLedger orderLedger;
+    private PlayerSession playerSession;
 
     private final String mapSvgName = "map_europe_1900.svg";
     private final String mapMaskName = "map_mask_europe_1900.png";
@@ -70,8 +63,10 @@ public class GameViewController {
 
         List<Player> players = new ArrayList<>();
         players.add(new Player(gameMap.getCountry("France"), new Password("12345")));
+        players.add(new Player(gameMap.getCountry("Germany"), new Password("12345")));
         players.add(new Player(gameMap.getCountry("England"), new Password("12345")));
         players.add(new Player(gameMap.getCountry("Italy"), new Password("12345")));
+        players.add(new Player(gameMap.getCountry("Austria-Hungary"), new Password("12345")));
         players.add(new Player(gameMap.getCountry("Russia"), new Password("12345")));
         players.add(new Player(gameMap.getCountry("Turkey"), new Password("12345")));
         System.out.println("Players created.");
@@ -101,17 +96,23 @@ public class GameViewController {
             }
         });
 
-        orderController = new OrderController(gameMaster, mapView, ordersListView, logTextArea);
-        inputHandler = new MapInputHandler(mapView, mask, colorToProvince, orderController, mapView.getMapWidth(), mapView.getMapHeight());
+        orderLedger = new OrderLedger(gameMaster, mapView, ordersListView);
+        playerSession = new PlayerSession(gameMaster, orderLedger, currentPlayerLabel,
+            playerInfoLabel, loginButton, confirmOrdersButton, orderTypeGroup);
+        orderController = new OrderController(gameMaster, mapView,
+            logTextArea, orderLedger, playerSession);
+        inputHandler = new MapInputHandler(mapView, mask, colorToProvince, orderController,
+            mapView.getMapWidth(), mapView.getMapHeight());
 
         renderInitialUnits();
 
         setupOrderListDelete();
 
-        setCurrentPlayer(null);
+        playerSession.enterSpectatorMode();
 
         orderTypeGroup.selectedToggleProperty().addListener((obs, oldToggle, newToggle) -> {
-            if (orderController.isOrdersConfirmed()) {
+            Player cp = playerSession.getCurrentPlayer();
+            if (cp != null && orderLedger.isConfirmed(cp)) {
                 for (Toggle t : orderTypeGroup.getToggles()) {
                     if ("None".equals(((RadioButton) t).getText())) {
                         orderTypeGroup.selectToggle(t);
@@ -130,40 +131,13 @@ public class GameViewController {
         System.out.println("=== initialize END ===");
     }
 
-    private void setCurrentPlayer(Player player) {
-        currentPlayer = player;
-        if (player != null) {
-            currentPlayerLabel.setText(player.getName());
-            loginButton.setText("Switch");
-            long fleets = player.getUnits().stream().filter(u -> u instanceof Fleet).count();
-            long armies = player.getUnits().stream().filter(u -> u instanceof Army).count();
-            int sc = player.getSupplyCenters().size();
-            playerInfoLabel.setText(player.getName() + " | SC: " + sc + " | A: " + armies + " F: " + fleets);
-            confirmOrdersButton.setDisable(false);
-            confirmOrdersButton.setText(orderController.isOrdersConfirmed() ? "Cancel Confirmation" : "Confirm Orders");
-            for (Toggle t : orderTypeGroup.getToggles()) {
-                ((Node) t).setDisable(false);
-            }
-        } else {
-            currentPlayerLabel.setText("Spectator");
-            loginButton.setText("Login");
-            playerInfoLabel.setText("");
-            confirmOrdersButton.setDisable(true);
-            confirmOrdersButton.setText("Confirm Orders");
-            for (Toggle t : orderTypeGroup.getToggles()) {
-                ((Node) t).setDisable(true);
-            }
-        }
-        orderController.setCurrentPlayer(player);
-    }
-
     private void setupOrderListDelete() {
         ordersListView.setOnMouseClicked(event -> {
             if (event.getButton() == MouseButton.SECONDARY) return;
             if (event.getClickCount() == 2) {
                 int index = ordersListView.getSelectionModel().getSelectedIndex();
                 if (index >= 0) {
-                    orderController.removeOrder(index);
+                    orderLedger.removeOrder(playerSession.getCurrentPlayer(), index);
                 }
             }
         });
@@ -171,42 +145,12 @@ public class GameViewController {
 
     @FXML
     private void onSpectatorClick() {
-        setCurrentPlayer(null);
-        for (Toggle t : orderTypeGroup.getToggles()) {
-            if ("None".equals(((RadioButton) t).getText())) {
-                orderTypeGroup.selectToggle(t);
-                break;
-            }
-        }
+        playerSession.enterSpectatorMode();
     }
 
     @FXML
     private void onLoginClick() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/playerLoginDialog.fxml"));
-            Parent root = loader.load();
-            PlayerLoginDialogController controller = loader.getController();
-
-            Stage dialog = new Stage();
-            dialog.initModality(Modality.APPLICATION_MODAL);
-            dialog.initOwner(mapContainer.getScene().getWindow());
-            dialog.setTitle("Player Login");
-            dialog.setResizable(false);
-            dialog.setScene(new Scene(root));
-
-            controller.initData(gameMaster.getPlayers());
-            controller.setStage(dialog);
-
-            dialog.showAndWait();
-
-            Player authenticated = controller.getAuthenticatedPlayer();
-            if (authenticated != null) {
-                setCurrentPlayer(authenticated);
-            }
-        } catch (Exception e) {
-            System.err.println("Failed to load login dialog: " + e.getMessage());
-            e.printStackTrace();
-        }
+        playerSession.showLoginDialog(mapContainer.getScene().getWindow());
     }
 
     private OrderType parseOrderType(String text) {
@@ -283,18 +227,19 @@ public class GameViewController {
     }
 
     @FXML private void onConfirmOrdersClick() {
+        Player currentPlayer = playerSession.getCurrentPlayer();
         if (currentPlayer == null) return;
-        if (orderController.isOrdersConfirmed()) {
-            orderController.cancelConfirmation();
-            confirmOrdersButton.setText("Confirm Orders");
+        if (orderLedger.isConfirmed(currentPlayer)) {
+            orderLedger.cancelConfirmation(currentPlayer);
         } else {
-            orderController.confirmOrders();
-            confirmOrdersButton.setText("Cancel Confirmation");
-            for (Toggle t : orderTypeGroup.getToggles()) {
-                if ("None".equals(((RadioButton) t).getText())) {
-                    orderTypeGroup.selectToggle(t);
-                    break;
-                }
+            orderLedger.confirm(currentPlayer);
+        }
+        orderController.clearSelection();
+        playerSession.updateConfirmButton();
+        for (Toggle t : orderTypeGroup.getToggles()) {
+            if ("None".equals(((RadioButton) t).getText())) {
+                orderTypeGroup.selectToggle(t);
+                break;
             }
         }
     }
