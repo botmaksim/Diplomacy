@@ -10,6 +10,7 @@ public class OrderPrototype {
     private OrderType orderType;
     private Location selectedLocation;
     private Province destination;
+    private Location destinationLocation;
     private Unit additionalUnit;
     private Player player;
 
@@ -18,6 +19,14 @@ public class OrderPrototype {
 
     public void setDestination(Province destination) {
         this.destination = destination;
+    }
+
+    public void setDestinationLocation(Location destinationLocation) {
+        this.destinationLocation = destinationLocation;
+    }
+
+    public Location getDestinationLocation() {
+        return destinationLocation;
     }
 
     public void setOrderType(OrderType orderType) {
@@ -80,6 +89,7 @@ public class OrderPrototype {
         selectedLocation = null;
         orderType = null;
         destination = null;
+        destinationLocation = null;
         additionalUnit = null;
         player = null;
     }

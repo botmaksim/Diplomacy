@@ -157,7 +157,11 @@ public class OrderCreator {
 
         Unit unit = prototype.getSelectedLocation().getParentProvince().getOccupyingUnit();
 
-        if (getProvinceLocation(unit.getLocation().getNeighbours(), prototype.getDestination()) == null) {
+        if (prototype.getDestinationLocation() != null) {
+            if (!unit.getLocation().getNeighbours().contains(prototype.getDestinationLocation())) {
+                return VerificationResult.DESTINATION_NOT_REACHABLE;
+            }
+        } else if (getProvinceLocation(unit.getLocation().getNeighbours(), prototype.getDestination()) == null) {
             return VerificationResult.DESTINATION_NOT_REACHABLE;
         }
 
@@ -284,8 +288,12 @@ public class OrderCreator {
         return switch (prototype.getOrderType()) {
             case HOLD ->
                 new HoldOrder(prototype.getSelectedLocation());
-            case MOVE ->
-                new MoveOrder(getProvinceLocation(prototype.getSelectedLocation().getNeighbours(), prototype.getDestination()), prototype.getSelectedLocation());
+            case MOVE -> {
+                Location dest = prototype.getDestinationLocation() != null
+                    ? prototype.getDestinationLocation()
+                    : getProvinceLocation(prototype.getSelectedLocation().getNeighbours(), prototype.getDestination());
+                yield new MoveOrder(dest, prototype.getSelectedLocation());
+            }
             case SUPPORT ->
                 new SupportOrder(prototype.getAdditionalUnit().getLocation(), getProvinceLocation(prototype.getAdditionalUnit().getLocation().getNeighbours(), prototype.getDestination()), prototype.getSelectedLocation());
             case CONVOY ->

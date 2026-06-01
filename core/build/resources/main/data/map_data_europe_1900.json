@@ -19,7 +19,9 @@
         "Bre": "fleet",
         "Mar": "army",
         "LYO": "fleet",
-        "TYS": "fleet"
+        "TYS": "fleet",
+        "MAO": "fleet",
+        "AEG": "fleet"
       }
     },
     "GER": {
@@ -63,7 +65,7 @@
       "name": "Turkey",
       "home_centers": ["Con", "Smy", "Ank"],
       "starting_units": {
-        "Con": "army",
+        "Con": "fleet",
         "Smy": "army",
         "Ank": "fleet"
       }

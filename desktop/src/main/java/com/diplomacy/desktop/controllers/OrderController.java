@@ -1,5 +1,10 @@
 package com.diplomacy.desktop.controllers;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import com.diplomacy.logic.gameControllingUnits.GameMaster;
 import com.diplomacy.logic.geography.basic.Location;
 import com.diplomacy.logic.geography.basic.Province;
@@ -17,9 +22,14 @@ import com.diplomacy.logic.player.Player;
 import com.diplomacy.logic.turnClassificator.PhaseType;
 import com.diplomacy.logic.units.Unit;
 
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.paint.Color;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
 public class OrderController {
 
@@ -34,7 +44,7 @@ public class OrderController {
     private OrderPrototype currentPrototype;
     private boolean waitingForSecondaryTarget;
     private Player currentPlayer;
-    private boolean ordersConfirmed;
+    private final Set<Player> confirmedPlayers = new HashSet<>();
 
     public OrderController(GameMaster gm, MapView mv, ListView<String> orders, TextArea log) {
         this.gameMaster = gm;
@@ -79,6 +89,52 @@ public class OrderController {
         mapView.clearHighlights();
     }
 
+    private boolean hasMultipleReachableCoasts(Unit unit, Province target) {
+        if (unit == null || target == null) return false;
+        List<Location> coastLocs = new ArrayList<>();
+        for (Location n : unit.getLocation().getNeighbours()) {
+            if (n.getParentProvince().equals(target) && n.getName() != null && n.getName().startsWith("coast")) {
+                coastLocs.add(n);
+            }
+        }
+        return coastLocs.size() > 1;
+    }
+
+    private List<Location> getReachableCoastLocations(Unit unit, Province target) {
+        List<Location> result = new ArrayList<>();
+        if (unit == null || target == null) return result;
+        for (Location n : unit.getLocation().getNeighbours()) {
+            if (n.getParentProvince().equals(target) && n.getName() != null && n.getName().startsWith("coast")) {
+                result.add(n);
+            }
+        }
+        return result;
+    }
+
+    private Location showCoastSelectionDialog(Province province, List<Location> coastLocs) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/coastSelectionDialog.fxml"));
+            Parent root = loader.load();
+            CoastSelectionDialogController controller = loader.getController();
+
+            Stage dialog = new Stage();
+            dialog.initModality(Modality.APPLICATION_MODAL);
+            dialog.initOwner(mapView.getView().getScene().getWindow());
+            dialog.setTitle("Choose Coast");
+            dialog.setResizable(false);
+            dialog.setScene(new Scene(root));
+
+            controller.initData(coastLocs, province.getName());
+            controller.setStage(dialog);
+
+            dialog.showAndWait();
+            return controller.getSelectedLocation();
+        } catch (Exception e) {
+            log("[OrderController] Failed to load coast selection dialog: " + e.getMessage());
+            return null;
+        }
+    }
+
     private void clearSelection() {
         clearCurrentOrder();
         currentOrderType = null;
@@ -86,7 +142,7 @@ public class OrderController {
     }
 
     public void processClick(Province clicked) {
-        if (ordersConfirmed) {
+        if (currentPlayer == null || confirmedPlayers.contains(currentPlayer)) {
             return;
         }
 
@@ -211,6 +267,16 @@ public class OrderController {
         switch (currentOrderType) {
             case MOVE -> {
                 currentPrototype.setDestination(target);
+                if (selectedUnit != null && hasMultipleReachableCoasts(selectedUnit, target)) {
+                    List<Location> coastLocs = getReachableCoastLocations(selectedUnit, target);
+                    Location chosen = showCoastSelectionDialog(target, coastLocs);
+                    if (chosen == null) {
+                        log("[OrderController] Coast selection cancelled for " + target.getName());
+                        clearCurrentOrder();
+                        return;
+                    }
+                    currentPrototype.setDestinationLocation(chosen);
+                }
                 tryFinalizeOrder();
             }
             case BECONVOYED -> {
@@ -283,17 +349,19 @@ public class OrderController {
     }
 
     public boolean isOrdersConfirmed() {
-        return ordersConfirmed;
+        return currentPlayer != null && confirmedPlayers.contains(currentPlayer);
     }
 
     public void confirmOrders() {
-        ordersConfirmed = true;
+        if (currentPlayer == null) return;
+        confirmedPlayers.add(currentPlayer);
         clearCurrentOrder();
         log("[OrderController] Orders confirmed for " + currentPlayer.getName() + ". Further changes blocked.");
     }
 
     public void cancelConfirmation() {
-        ordersConfirmed = false;
+        if (currentPlayer == null) return;
+        confirmedPlayers.remove(currentPlayer);
         currentOrderType = null;
         log("[OrderController] Orders confirmation cancelled for " + currentPlayer.getName() + ".");
     }
@@ -347,8 +415,7 @@ public class OrderController {
     }
 
     public void removeOrder(int index) {
-        if (ordersConfirmed) return;
-        if (currentPlayer == null) return;
+        if (currentPlayer == null || confirmedPlayers.contains(currentPlayer)) return;
         var pending = gameMaster.getPendingOrders(currentPlayer);
         if (index < 0 || index >= pending.size()) return;
         gameMaster.removeOrder(currentPlayer, index);

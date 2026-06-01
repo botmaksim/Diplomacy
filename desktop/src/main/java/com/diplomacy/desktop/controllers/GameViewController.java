@@ -16,16 +16,22 @@ import com.diplomacy.logic.geography.basic.Province;
 import com.diplomacy.logic.orders.utils.OrderType;
 import com.diplomacy.logic.player.Password;
 import com.diplomacy.logic.player.Player;
+import com.diplomacy.logic.units.Army;
+import com.diplomacy.logic.units.Fleet;
 import com.diplomacy.logic.units.Unit;
 
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextArea;
+import javafx.scene.Node;
 import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.image.Image;
@@ -33,6 +39,8 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Rectangle;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
 public class GameViewController {
 
@@ -40,14 +48,17 @@ public class GameViewController {
     @FXML private ListView<String> ordersListView;
     @FXML private ToggleGroup orderTypeGroup;
     @FXML private TextArea logTextArea;
-    @FXML private ComboBox<String> playerSelector;
+    @FXML private Label currentPlayerLabel;
+    @FXML private Label playerInfoLabel;
+    @FXML private Button loginButton;
+    @FXML private Button spectatorButton;
     @FXML private Button confirmOrdersButton;
 
     private GameMaster gameMaster;
     private MapView mapView;
     private MapInputHandler inputHandler;
     private OrderController orderController;
-    private List<Player> playersList;
+    private Player currentPlayer;
 
     private final String mapSvgName = "map_europe_1900.svg";
     private final String mapMaskName = "map_mask_europe_1900.png";
@@ -97,20 +108,7 @@ public class GameViewController {
 
         setupOrderListDelete();
 
-        playersList = players;
-        for (Player p : players) {
-            playerSelector.getItems().add(p.getName());
-        }
-        if (!players.isEmpty()) {
-            playerSelector.getSelectionModel().select(0);
-            orderController.setCurrentPlayer(players.get(0));
-        }
-        playerSelector.setOnAction(e -> {
-            int idx = playerSelector.getSelectionModel().getSelectedIndex();
-            if (idx >= 0 && idx < playersList.size()) {
-                orderController.setCurrentPlayer(playersList.get(idx));
-            }
-        });
+        setCurrentPlayer(null);
 
         orderTypeGroup.selectedToggleProperty().addListener((obs, oldToggle, newToggle) -> {
             if (orderController.isOrdersConfirmed()) {
@@ -132,6 +130,33 @@ public class GameViewController {
         System.out.println("=== initialize END ===");
     }
 
+    private void setCurrentPlayer(Player player) {
+        currentPlayer = player;
+        if (player != null) {
+            currentPlayerLabel.setText(player.getName());
+            loginButton.setText("Switch");
+            long fleets = player.getUnits().stream().filter(u -> u instanceof Fleet).count();
+            long armies = player.getUnits().stream().filter(u -> u instanceof Army).count();
+            int sc = player.getSupplyCenters().size();
+            playerInfoLabel.setText(player.getName() + " | SC: " + sc + " | A: " + armies + " F: " + fleets);
+            confirmOrdersButton.setDisable(false);
+            confirmOrdersButton.setText(orderController.isOrdersConfirmed() ? "Cancel Confirmation" : "Confirm Orders");
+            for (Toggle t : orderTypeGroup.getToggles()) {
+                ((Node) t).setDisable(false);
+            }
+        } else {
+            currentPlayerLabel.setText("Spectator");
+            loginButton.setText("Login");
+            playerInfoLabel.setText("");
+            confirmOrdersButton.setDisable(true);
+            confirmOrdersButton.setText("Confirm Orders");
+            for (Toggle t : orderTypeGroup.getToggles()) {
+                ((Node) t).setDisable(true);
+            }
+        }
+        orderController.setCurrentPlayer(player);
+    }
+
     private void setupOrderListDelete() {
         ordersListView.setOnMouseClicked(event -> {
             if (event.getButton() == MouseButton.SECONDARY) return;
@@ -142,6 +167,46 @@ public class GameViewController {
                 }
             }
         });
+    }
+
+    @FXML
+    private void onSpectatorClick() {
+        setCurrentPlayer(null);
+        for (Toggle t : orderTypeGroup.getToggles()) {
+            if ("None".equals(((RadioButton) t).getText())) {
+                orderTypeGroup.selectToggle(t);
+                break;
+            }
+        }
+    }
+
+    @FXML
+    private void onLoginClick() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/playerLoginDialog.fxml"));
+            Parent root = loader.load();
+            PlayerLoginDialogController controller = loader.getController();
+
+            Stage dialog = new Stage();
+            dialog.initModality(Modality.APPLICATION_MODAL);
+            dialog.initOwner(mapContainer.getScene().getWindow());
+            dialog.setTitle("Player Login");
+            dialog.setResizable(false);
+            dialog.setScene(new Scene(root));
+
+            controller.initData(gameMaster.getPlayers());
+            controller.setStage(dialog);
+
+            dialog.showAndWait();
+
+            Player authenticated = controller.getAuthenticatedPlayer();
+            if (authenticated != null) {
+                setCurrentPlayer(authenticated);
+            }
+        } catch (Exception e) {
+            System.err.println("Failed to load login dialog: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     private OrderType parseOrderType(String text) {
@@ -218,6 +283,7 @@ public class GameViewController {
     }
 
     @FXML private void onConfirmOrdersClick() {
+        if (currentPlayer == null) return;
         if (orderController.isOrdersConfirmed()) {
             orderController.cancelConfirmation();
             confirmOrdersButton.setText("Confirm Orders");

@@ -38,7 +38,9 @@
 
             <HBox spacing="5.0" alignment="CENTER_LEFT">
                <Label text="Player:" />
-               <ComboBox fx:id="playerSelector" prefWidth="200.0" />
+               <Label fx:id="currentPlayerLabel" text="-" prefWidth="130.0" />
+               <Button fx:id="loginButton" mnemonicParsing="false" onAction="#onLoginClick" text="Login" />
+               <Button fx:id="spectatorButton" mnemonicParsing="false" onAction="#onSpectatorClick" text="Spectator" />
             </HBox>
             <Separator prefHeight="10.0" prefWidth="200.0" />
 
@@ -77,12 +79,13 @@
       </VBox>
    </right>
    <top>
-      <HBox alignment="CENTER_LEFT" prefWidth="200.0" BorderPane.alignment="CENTER">
+      <HBox alignment="CENTER_LEFT" spacing="20.0" BorderPane.alignment="CENTER">
          <padding>
             <Insets top="15.0" right="15.0" bottom="15.0" left="15.0" />
          </padding>
          <children>
-             <Label text="Diplomacy - Current Game">...</Label>
+            <Label text="Diplomacy" />
+            <Label fx:id="playerInfoLabel" text="" />
          </children>
       </HBox>
    </top>
