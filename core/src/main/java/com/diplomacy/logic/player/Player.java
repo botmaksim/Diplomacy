@@ -34,6 +34,10 @@ public class Player {
         this.supplyCenters = supplyCenters;
     }
 
+    public String getName() {
+        return country.getName();
+    }
+
     public Country getCountry() {
         return country;
     }

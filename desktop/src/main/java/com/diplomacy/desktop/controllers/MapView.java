@@ -19,8 +19,10 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Scale;
 import javafx.scene.transform.Translate;
 
@@ -43,7 +45,6 @@ public class MapView {
     private final double mapWidth = 610;
     private final double mapHeight = 560;
 
-    // Размеры контейнера (обновляются извне)
     private double containerWidth;
     private double containerHeight;
 
@@ -63,11 +64,6 @@ public class MapView {
         computeProvinceCenters();
     }
 
-    // ================== Подгонка под контейнер ==================
-
-    /**
-     * Устанавливает размер контейнера и автоматически центрирует карту.
-     */
     public void setContainerSize(double width, double height) {
         this.containerWidth = width;
         this.containerHeight = height;
@@ -75,41 +71,27 @@ public class MapView {
     }
 
     public void fitToContainer(double containerWidth, double containerHeight) {
-    // Проверка на случай, если размеры еще не определены
-    if (containerWidth <= 0 || containerHeight <= 0 || mapWidth <= 0 || mapHeight <= 0) {
-        return;
+        if (containerWidth <= 0 || containerHeight <= 0 || mapWidth <= 0 || mapHeight <= 0) {
+            return;
+        }
+
+        double scaleX = containerWidth / mapWidth;
+        double scaleY = containerHeight / mapHeight;
+
+        double scale = Math.max(scaleX, scaleY);
+
+        scaleTransform.setX(scale);
+        scaleTransform.setY(scale);
+
+        double scaledMapWidth = mapWidth * scale;
+        double scaledMapHeight = mapHeight * scale;
+
+        double transX = (containerWidth - scaledMapWidth) / 2;
+        double transY = (containerHeight - scaledMapHeight) / 2;
+
+        translateTransform.setX(transX);
+        translateTransform.setY(transY);
     }
-
-    // Рассчитываем коэффициенты масштабирования для заполнения по ширине и по высоте
-    double scaleX = containerWidth / mapWidth;
-    double scaleY = containerHeight / mapHeight;
-
-    // Выбираем БОЛЬШИЙ из коэффициентов. Это гарантирует, что карта
-    // заполнит контейнер по одной оси и выйдет за пределы по другой.
-    double scale = Math.max(scaleX, scaleY);
-
-    // Применяем вычисленный масштаб
-    scaleTransform.setX(scale);
-    scaleTransform.setY(scale);
-
-    // Вычисляем реальные размеры карты после масштабирования
-    double scaledMapWidth = mapWidth * scale;
-    double scaledMapHeight = mapHeight * scale;
-
-    // Вычисляем смещение, необходимое для центрирования увеличенной карты.
-    // Смещение будет отрицательным или нулевым, сдвигая карту так,
-    // чтобы ее центр совпал с центром контейнера.
-    double transX = (containerWidth - scaledMapWidth) / 2;
-    double transY = (containerHeight - scaledMapHeight) / 2;
-
-    // Применяем вычисленное смещение
-    translateTransform.setX(transX);
-    translateTransform.setY(transY);
-}
-    /**
-     * Ограничивает перемещение так, чтобы карта всегда полностью заполняла контейнер
-     * (при статическом режиме просто центрирует).
-     */
     public void clampTranslation() {
         if (containerWidth <= 0 || containerHeight <= 0) return;
 
@@ -117,7 +99,6 @@ public class MapView {
         double scaledMapW = mapWidth * scale;
         double scaledMapH = mapHeight * scale;
 
-        // Центрируем карту независимо от размера (статический режим)
         double currentX = (containerWidth - scaledMapW) / 2;
         double currentY = (containerHeight - scaledMapH) / 2;
 
@@ -184,7 +165,7 @@ public class MapView {
         double[] pos = locs.get(0);
 
         Image icon = getUnitIcon(unit);
-        if (icon == null) return;  // иконка не найдена – не добавляем юнит
+        if (icon == null) return;
 
         ImageView iv = new ImageView(icon);
         iv.setUserData(unit);
@@ -192,7 +173,7 @@ public class MapView {
         iv.setY(pos[1] - icon.getHeight() / 2);
         iv.setEffect(new DropShadow(10, Color.BLACK));
         iv.setOnMouseClicked(e -> {
-            e.consume();  // дальнейшая обработка клика делегируется контроллеру
+            e.consume();
         });
         unitPane.getChildren().add(iv);
         unitViews.put(unit, iv);
@@ -227,31 +208,100 @@ public class MapView {
         if (from == null || to == null) return;
 
         Color color = switch (type) {
-            case MOVE    -> Color.DARKRED;
-            case SUPPORT -> Color.DARKGREEN;
-            case CONVOY  -> Color.DARKBLUE;
-            case RETREAT -> Color.ORANGE;
-            default      -> Color.GRAY;
+            case MOVE       -> Color.DARKRED;
+            case SUPPORT    -> Color.DARKGREEN;
+            case CONVOY     -> Color.DARKBLUE;
+            case BECONVOYED -> Color.DODGERBLUE;
+            case RETREAT    -> Color.ORANGE;
+            default         -> Color.GRAY;
         };
 
-        boolean dashed = (type == OrderType.SUPPORT);
+        boolean dashed = (type == OrderType.SUPPORT || type == OrderType.BECONVOYED);
 
         drawArrow(from[0], from[1], to[0], to[1], color, dashed);
     }
 
-    public void drawSupportArrow(String fromProvinceId, String toProvinceId) {
-        double[] from = provinceCenters.get(fromProvinceId);
-        double[] to = provinceCenters.get(toProvinceId);
-        if (from == null || to == null) return;
+    public void drawHoldMarker(String provinceId) {
+        double[] center = provinceCenters.get(provinceId);
+        if (center == null) return;
 
-        Color color = Color.DARKBLUE;
-        boolean dashed = true;
-        drawArrow(from[0], from[1], to[0], to[1], color, dashed);
+        Circle marker = new Circle(center[0], center[1], 10);
+        marker.setFill(Color.TRANSPARENT);
+        marker.setStroke(Color.GOLD);
+        marker.setStrokeWidth(2.5);
+        marker.getStrokeDashArray().addAll(6.0, 3.0);
+        arrowGroup.getChildren().add(marker);
     }
 
-    // Приватный метод drawArrow с цветом и стилем уже есть, но покажем его снова для ясности:
-    private void drawArrow(double startX, double startY, double endX, double endY,
-                        Color color, boolean dashed) {
+    public void drawConvoyMarker(String provinceId) {
+        double[] center = provinceCenters.get(provinceId);
+        if (center == null) return;
+
+        Circle marker = new Circle(center[0], center[1], 14);
+        marker.setFill(Color.TRANSPARENT);
+        marker.setStroke(Color.DARKBLUE);
+        marker.setStrokeWidth(2.5);
+        arrowGroup.getChildren().add(marker);
+    }
+
+    public void drawConvoyLink(String fleetProvinceId, String armyProvinceId) {
+        double[] fleetPos = provinceCenters.get(fleetProvinceId);
+        double[] armyPos = provinceCenters.get(armyProvinceId);
+        if (fleetPos == null || armyPos == null) return;
+
+        Line link = new Line(fleetPos[0], fleetPos[1], armyPos[0], armyPos[1]);
+        link.setStroke(Color.DARKBLUE);
+        link.setStrokeWidth(2);
+        link.getStrokeDashArray().addAll(4.0, 4.0);
+        arrowGroup.getChildren().add(link);
+    }
+
+    public void drawDieMarker(String provinceId) {
+        double[] center = provinceCenters.get(provinceId);
+        if (center == null) return;
+
+        double x = center[0];
+        double y = center[1];
+        double size = 8;
+        Line l1 = new Line(x - size, y - size, x + size, y + size);
+        l1.setStroke(Color.RED);
+        l1.setStrokeWidth(3);
+        Line l2 = new Line(x + size, y - size, x - size, y + size);
+        l2.setStroke(Color.RED);
+        l2.setStrokeWidth(3);
+        arrowGroup.getChildren().addAll(l1, l2);
+    }
+
+    public void drawDismissMarker(String provinceId) {
+        double[] center = provinceCenters.get(provinceId);
+        if (center == null) return;
+
+        Circle marker = new Circle(center[0], center[1], 10);
+        marker.setFill(Color.TRANSPARENT);
+        marker.setStroke(Color.RED);
+        marker.setStrokeWidth(2.5);
+        arrowGroup.getChildren().add(marker);
+    }
+
+    public void drawSpawnMarker(String provinceId) {
+        double[] center = provinceCenters.get(provinceId);
+        if (center == null) return;
+
+        double x = center[0];
+        double y = center[1];
+        double size = 8;
+        Line h = new Line(x - size, y, x + size, y);
+        h.setStroke(Color.GREEN);
+        h.setStrokeWidth(3);
+        Line v = new Line(x, y - size, x, y + size);
+        v.setStroke(Color.GREEN);
+        v.setStrokeWidth(3);
+        arrowGroup.getChildren().addAll(h, v);
+    }
+
+    private void drawArrow(double startX, double startY,
+                            double endX, double endY,
+                            Color color, boolean dashed) {
         Line line = new Line(startX, startY, endX, endY);
         line.setStroke(color);
         line.setStrokeWidth(3);

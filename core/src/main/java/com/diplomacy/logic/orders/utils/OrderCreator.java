@@ -170,7 +170,7 @@ public class OrderCreator {
             return VerificationResult.DESTINATION_NOT_SET;
         }
 
-        if (prototype.isSetAdditionalUnit()) {
+        if (!prototype.isSetAdditionalUnit()) {
             return VerificationResult.SUPPORTED_NOT_SET;
         }
 
@@ -183,7 +183,8 @@ public class OrderCreator {
             return VerificationResult.CANNOT_SUPPORT_HERE;
         }
 
-        if (getProvinceLocation(executor.getLocation().getNeighbours(), prototype.getDestination()) == null) {
+        if (getProvinceLocation(prototype.getAdditionalUnit().getLocation().getNeighbours(), prototype.getDestination()) == null
+            && !prototype.getDestination().equals(prototype.getAdditionalUnit().getLocation().getParentProvince())) {
             return VerificationResult.SUPPORTED_CANNOT_REACH_DESTINATION;
         }
 

@@ -6,7 +6,9 @@
       "starting_units": {
         "Lon": "fleet",
         "Edi": "fleet",
-        "Lvp": "army"
+        "Lvp": "army",
+        "IRI": "fleet",
+        "ENG": "fleet"
       }
     },
     "FRA": {
@@ -15,7 +17,9 @@
       "starting_units": {
         "Par": "army",
         "Bre": "fleet",
-        "Mar": "army"
+        "Mar": "army",
+        "LYO": "fleet",
+        "TYS": "fleet"
       }
     },
     "GER": {
@@ -94,7 +98,7 @@
           "unit_coords": [443, 486]
         },
         "coast": {
-          "adjacency": ["BLA", "AEG", "Bul"],
+          "adjacency": ["BLA", "AEG", "Bul:coast_east", "Bul:coast_south"],
           "unit_coords": [443, 486]
         }
       }
@@ -181,7 +185,7 @@
       "hex_ID": "000008",
       "locations": {
         "sea": {
-          "adjacency": ["Cly", "Edi", "NTH", "NWY", "BAR", "NAO"],
+          "adjacency": ["Cly", "Edi", "NTH", "Nwy", "BAR", "NAO"],
           "unit_coords": [226, 70]
         }
       }
@@ -198,7 +202,7 @@
           "unit_coords": [179, 412]
         },
         "coast": {
-          "adjacency": ["LYO", "Spa"],
+          "adjacency": ["LYO", "Spa:coast_south"],
           "unit_coords": [179, 412]
         }
       }
@@ -227,7 +231,7 @@
       "hex_ID": "00000B",
       "locations": {
         "sea": {
-          "adjacency": ["NAO", "IRI", "ENG", "Bre", "Gas", "Spa", "Por", "Naf", "WES"],
+          "adjacency": ["NAO", "IRI", "ENG", "Bre", "Gas", "Spa:coast_north", "Spa:coast_south", "Por", "Naf", "WES"],
           "unit_coords": [56, 355]
         }
       }
@@ -244,7 +248,7 @@
           "unit_coords": [358, 490]
         },
         "coast": {
-          "adjacency": ["ION", "AEG", "Bul"],
+          "adjacency": ["ION", "AEG", "Bul:coast_south"],
           "unit_coords": [358, 490]
         }
       }
@@ -302,7 +306,7 @@
       "supply_center_coords": [320, 193],
       "locations": {
         "land": {
-          "adjacency": ["NWY", "Fin"],
+          "adjacency": ["Nwy", "Fin"],
           "unit_coords": [306, 170]
         },
         "coast": {
@@ -323,7 +327,7 @@
           "unit_coords": [516, 455]
         },
         "coast": {
-          "adjacency": ["BLA"],
+          "adjacency": ["BLA", "Arm", "Con"],
           "unit_coords": [516, 455]
         }
       }
@@ -434,16 +438,16 @@
       "supply_center_coords": [418, 187],
       "locations": {
         "land": {
-          "adjacency": ["Fin", "Mos", "Lvn", "NWY"],
+          "adjacency": ["Fin", "Mos", "Lvn", "Nwy"],
           "unit_coords": [466, 149]
         },
         "coast_south": {
-          "adjacency": ["BOT", "Lvn"],
-          "unit_coords": [466, 149]
+          "adjacency": ["BOT", "Lvn", "Fin"],
+          "unit_coords": [437, 187]
         },
         "coast_north": {
-          "adjacency": ["BAR", "NWY"],
-          "unit_coords": [466, 149]
+          "adjacency": ["BAR", "Nwy"],
+          "unit_coords": [490, 100]
         }
       }
     },
@@ -484,11 +488,11 @@
       "hex_ID": "00001C",
       "locations": {
         "land": {
-          "adjacency": ["Stp", "NWY"],
+          "adjacency": ["Stp", "Nwy"],
           "unit_coords": [381, 160]
         },
         "coast": {
-          "adjacency": ["BOT", "Swe"],
+          "adjacency": ["BOT", "Swe", "Stp:coast_south"],
           "unit_coords": [381, 160]
         }
       }
@@ -598,7 +602,7 @@
       "hex_ID": "000024",
       "locations": {
         "sea": {
-          "adjacency": ["NTH", "NWY", "Swe", "Den"],
+          "adjacency": ["NTH", "Nwy", "Swe", "Den"],
           "unit_coords": [261, 220]
         }
       }
@@ -610,7 +614,7 @@
       "hex_ID": "000025",
       "locations": {
         "sea": {
-          "adjacency": ["Swe", "Fin", "Stp", "Lvn", "BAL"],
+          "adjacency": ["Swe", "Fin", "Stp:coast_south", "Lvn", "BAL"],
           "unit_coords": [334, 175]
         }
       }
@@ -639,7 +643,7 @@
       "hex_ID": "000027",
       "locations": {
         "sea": {
-          "adjacency": ["Spa", "Mar", "Pie", "Tus", "TYS", "WES"],
+          "adjacency": ["Spa:coast_south", "Mar", "Pie", "Tus", "TYS", "WES"],
           "unit_coords": [176, 457]
         }
       }
@@ -742,7 +746,7 @@
       "supply_center_coords": [399, 410],
       "locations": {
         "land": {
-          "adjacency": ["Bud", "Gal", "Ukr", "Sev", "Bul", "Ser"],
+          "adjacency": ["Bud", "Gal", "Ukr", "Sev", "Bul:coast_east", "Ser"],
           "unit_coords": [416, 415]
         },
         "coast": {
@@ -871,7 +875,7 @@
       "hex_ID": "000036",
       "locations": {
         "sea": {
-          "adjacency": ["Stp", "NWY", "NWG"],
+          "adjacency": ["Stp:coast_north", "Nwy", "NWG"],
           "unit_coords": [446, 15]
         }
       }
@@ -959,7 +963,7 @@
       "hex_ID": "00003C",
       "locations": {
         "sea": {
-          "adjacency": ["Spa", "LYO", "TYS", "Tun", "Naf", "MAO"],
+          "adjacency": ["Spa:coast_south", "LYO", "TYS", "Tun", "Naf", "MAO"],
           "unit_coords": [166, 491]
         }
       }
@@ -975,7 +979,7 @@
           "unit_coords": [386, 260]
         },
         "coast": {
-          "adjacency": ["BAL", "BOT"],
+          "adjacency": ["BAL", "BOT", "Stp:coast_south"],
           "unit_coords": [386, 260]
         }
       }
@@ -987,12 +991,12 @@
       "hex_ID": "00003E",
       "locations": {
         "sea": {
-          "adjacency": ["Edi", "Yor", "Lon", "ENG", "Bel", "Hol", "Den", "HEL", "SKA", "NWY"],
+          "adjacency": ["Edi", "Yor", "Lon", "ENG", "Bel", "Hol", "Den", "HEL", "SKA", "Nwy"],
           "unit_coords": [196, 230]
         }
       }
     },
-    "NWY": {
+    "Nwy": {
       "name": "Norway",
       "type": "COASTAL",
       "is_supply_center": true,
@@ -1004,7 +1008,7 @@
           "unit_coords": [256, 175]
         },
         "coast": {
-          "adjacency": ["NWG", "BAR", "NTH", "SKA"],
+          "adjacency": ["NWG", "BAR", "NTH", "SKA", "Stp:coast_north"],
           "unit_coords": [256, 175]
         }
       }
@@ -1016,7 +1020,7 @@
       "hex_ID": "000040",
       "locations": {
         "sea": {
-          "adjacency": ["Gre", "Bul", "Con", "Smy", "EAS", "ION"],
+          "adjacency": ["Gre", "Bul:coast_south", "Con", "Smy", "EAS", "ION"],
           "unit_coords": [398, 510]
         }
       }
@@ -1033,7 +1037,7 @@
           "unit_coords": [28, 440]
         },
         "coast": {
-          "adjacency": ["MAO"],
+          "adjacency": ["MAO", "Spa:coast_north", "Spa:coast_south"],
           "unit_coords": [28, 440]
         }
       }
@@ -1093,7 +1097,7 @@
           "unit_coords": [136, 400]
         },
         "coast": {
-          "adjacency": ["MAO", "Spa"],
+          "adjacency": ["MAO", "Spa:coast_north"],
           "unit_coords": [136, 400]
         }
       }
@@ -1175,7 +1179,7 @@
       "hex_ID": "00004B",
       "locations": {
         "sea": {
-          "adjacency": ["Sev", "Arm", "Ank", "Con", "Bul", "Rum"],
+          "adjacency": ["Sev", "Arm", "Ank", "Con", "Bul:coast_east", "Rum"],
           "unit_coords": [506, 418]
         }
       }

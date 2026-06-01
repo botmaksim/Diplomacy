@@ -32,7 +32,6 @@ public class ConvoyHelper {
         return !current.isArmyLocation() && 
             target.getLocation().getParentProvince().getType() == ProvinceType.COASTAL &&
             target.getLocation().isArmyLocation() &&
-            !end.isOccupied() &&
             doesPathExists(current, getFleetLocations(target.getLocation())) &&
             doesPathExists(current, end.getLocations());
     }

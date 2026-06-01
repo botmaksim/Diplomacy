@@ -184,17 +184,33 @@ public class MapLoader {
                                             String currentLocName,
                                             Map<String, Province> provincesById,
                                             Map<String, Location> locationsByFullId) {
-        String internalKey = buildLocationFullId(currentProvinceId, rawNeighbor);
-        if (locationsByFullId.containsKey(internalKey)) {
-            return locationsByFullId.get(internalKey);
-        } // Соседние берега?
+
+        if (rawNeighbor.contains(":")) {
+            String[] parts = rawNeighbor.split(":", 2);
+            String targetProvinceId = parts[0];
+            String targetLocName = parts[1];
+            Province targetProvince = provincesById.get(targetProvinceId);
+            if (targetProvince == null) {
+                return null;
+            }
+            return targetProvince.getLocations().stream()
+                    .filter(loc -> loc.getName().equals(targetLocName))
+                    .findFirst()
+                    .orElse(null);
+        }
+
+        // String internalKey = buildLocationFullId(currentProvinceId, rawNeighbor);
+        // if (locationsByFullId.containsKey(internalKey)) {
+        //     return locationsByFullId.get(internalKey);
+        // }
 
         Province neighborProvince = provincesById.get(rawNeighbor);
-        if (neighborProvince == null)
+        if (neighborProvince == null) {
             return null;
+        }
 
         return findPrimaryLocation(neighborProvince, currentLocName);
-    } //++
+    } //??
 
     private static Location findPrimaryLocation(Province province, String sourceLocName) {
         List<Location> locs = province.getLocations();
@@ -281,3 +297,4 @@ public class MapLoader {
 }
 
 // В uppercase переводить нельзя. Ведь Болгария - Bul, Чёрное море BLA
+// Ещё бы JSON переписать. И решеить проблему берег Португалии - берег Испании

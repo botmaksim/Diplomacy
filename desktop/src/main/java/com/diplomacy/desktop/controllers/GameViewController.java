@@ -21,9 +21,16 @@ import com.diplomacy.logic.units.Unit;
 import javafx.fxml.FXML;
 import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListView;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.Toggle;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Rectangle;
 
@@ -31,11 +38,16 @@ public class GameViewController {
 
     @FXML private StackPane mapContainer;
     @FXML private ListView<String> ordersListView;
+    @FXML private ToggleGroup orderTypeGroup;
+    @FXML private TextArea logTextArea;
+    @FXML private ComboBox<String> playerSelector;
+    @FXML private Button confirmOrdersButton;
 
     private GameMaster gameMaster;
     private MapView mapView;
     private MapInputHandler inputHandler;
     private OrderController orderController;
+    private List<Player> playersList;
 
     private final String mapSvgName = "map_europe_1900.svg";
     private final String mapMaskName = "map_mask_europe_1900.png";
@@ -43,7 +55,7 @@ public class GameViewController {
     @FXML
     public void initialize() {
         GameMap gameMap = MapLoader.load();
-        System.out.println("Map loaded");
+        System.out.println("Map loaded.");
 
         List<Player> players = new ArrayList<>();
         players.add(new Player(gameMap.getCountry("France"), new Password("12345")));
@@ -51,11 +63,11 @@ public class GameViewController {
         players.add(new Player(gameMap.getCountry("Italy"), new Password("12345")));
         players.add(new Player(gameMap.getCountry("Russia"), new Password("12345")));
         players.add(new Player(gameMap.getCountry("Turkey"), new Password("12345")));
-        System.out.println("Players created");
+        System.out.println("Players created.");
 
         gameMaster = new GameMaster(players, gameMap, null);
         gameMaster.initializeStartPositions();
-        System.out.println("GameMaster initialized");
+        System.out.println("GameMaster initialized.");
 
         Map<String, Map<String, Object>> rawUi = MapLoader.loadUiData();
         Image mask = new Image(getClass().getResourceAsStream("/maps/" + mapMaskName));
@@ -67,38 +79,90 @@ public class GameViewController {
         mapView = new MapView(svgRoot, provinceIds, unitCoordinates);
         mapContainer.getChildren().add(mapView.getView());
 
-        // Обрезаем карту по размерам контейнера
         Rectangle clipRect = new Rectangle();
         clipRect.widthProperty().bind(mapContainer.widthProperty());
         clipRect.heightProperty().bind(mapContainer.heightProperty());
         mapContainer.setClip(clipRect);
 
-        // Один слушатель: подгонка карты при старте и при изменении размеров окна
         mapContainer.layoutBoundsProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal.getWidth() > 0 && newVal.getHeight() > 0) {
                 mapView.fitToContainer(newVal.getWidth(), newVal.getHeight());
             }
         });
 
-        orderController = new OrderController(gameMaster, mapView, ordersListView);
+        orderController = new OrderController(gameMaster, mapView, ordersListView, logTextArea);
         inputHandler = new MapInputHandler(mapView, mask, colorToProvince, orderController, mapView.getMapWidth(), mapView.getMapHeight());
 
         renderInitialUnits();
 
+        setupOrderListDelete();
+
+        playersList = players;
+        for (Player p : players) {
+            playerSelector.getItems().add(p.getName());
+        }
+        if (!players.isEmpty()) {
+            playerSelector.getSelectionModel().select(0);
+            orderController.setCurrentPlayer(players.get(0));
+        }
+        playerSelector.setOnAction(e -> {
+            int idx = playerSelector.getSelectionModel().getSelectedIndex();
+            if (idx >= 0 && idx < playersList.size()) {
+                orderController.setCurrentPlayer(playersList.get(idx));
+            }
+        });
+
+        orderTypeGroup.selectedToggleProperty().addListener((obs, oldToggle, newToggle) -> {
+            if (orderController.isOrdersConfirmed()) {
+                for (Toggle t : orderTypeGroup.getToggles()) {
+                    if ("None".equals(((RadioButton) t).getText())) {
+                        orderTypeGroup.selectToggle(t);
+                        return;
+                    }
+                }
+            }
+            if (newToggle == null) {
+                orderController.setOrderType(null);
+                return;
+            }
+            String text = ((RadioButton) newToggle).getText();
+            orderController.setOrderType(parseOrderType(text));
+        });
+
         System.out.println("=== initialize END ===");
+    }
+
+    private void setupOrderListDelete() {
+        ordersListView.setOnMouseClicked(event -> {
+            if (event.getButton() == MouseButton.SECONDARY) return;
+            if (event.getClickCount() == 2) {
+                int index = ordersListView.getSelectionModel().getSelectedIndex();
+                if (index >= 0) {
+                    orderController.removeOrder(index);
+                }
+            }
+        });
+    }
+
+    private OrderType parseOrderType(String text) {
+        return switch (text) {
+            case "None" -> null;
+            case "BeConvoyed" -> OrderType.BECONVOYED;
+            default -> OrderType.valueOf(text.toUpperCase());
+        };
     }
 
     private Node loadSvg() {
         try {
             java.net.URL svgUrl = getClass().getResource("/maps/" + mapSvgName);
             if (svgUrl == null) {
-                throw new java.io.FileNotFoundException("Файл карты не найден в ресурсах");
+                throw new java.io.FileNotFoundException("Map file not found in resources.");
             }
             SVGImage image = SVGLoader.load(svgUrl);
             if (image == null) throw new Exception("SVG is null");
             return image;
         } catch (Exception e) {
-            System.err.println("SVG не загрузился: " + e.getMessage());
+            System.err.println("Failed to load SVG: " + e.getMessage());
             e.printStackTrace();
             Image img = new Image(getClass().getResourceAsStream("/maps/" + mapMaskName));
             ImageView iv = new ImageView(img);
@@ -153,21 +217,19 @@ public class GameViewController {
         return result;
     }
 
-    @FXML private void onMoveButtonClick() { 
-        System.out.println("HERE LOH");
-        orderController.setOrderType(OrderType.MOVE); 
-    }
-    @FXML private void onSupportButtonClick() { 
-        orderController.setOrderType(OrderType.SUPPORT); 
-    }
-    @FXML private void onHoldButtonClick() {
-        orderController.setOrderType(OrderType.HOLD);
-        orderController.processClick(null);
-    }
-    @FXML private void onConvoyButtonClick() { 
-        orderController.setOrderType(OrderType.CONVOY); 
-    }
     @FXML private void onConfirmOrdersClick() {
-        System.out.println("Подтверждение приказов пока не реализовано");
+        if (orderController.isOrdersConfirmed()) {
+            orderController.cancelConfirmation();
+            confirmOrdersButton.setText("Confirm Orders");
+        } else {
+            orderController.confirmOrders();
+            confirmOrdersButton.setText("Cancel Confirmation");
+            for (Toggle t : orderTypeGroup.getToggles()) {
+                if ("None".equals(((RadioButton) t).getText())) {
+                    orderTypeGroup.selectToggle(t);
+                    break;
+                }
+            }
+        }
     }
 }

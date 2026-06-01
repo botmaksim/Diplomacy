@@ -1,6 +1,7 @@
 package com.diplomacy.logic.gameControllingUnits;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -26,7 +27,7 @@ public class GameMaster {
     public final GameMap map;
     public final History history;
     public final Executor executor;
-    private final List<Order> pendingOrders = new ArrayList<>();
+    private final Map<Player, List<Order>> pendingOrdersByPlayer = new HashMap<>();
 
     public GameMaster(List<Player> players, GameMap map, History history, Executor executor) {
         if (history != null && history.getLastTurn() != null) {
@@ -118,7 +119,8 @@ public class GameMaster {
                 );
         } else {
             for (Location loc : province.getLocations()) {
-                if (loc.getName() != null && loc.getName().startsWith("coast")) return loc;
+                // if (loc.getName() != null && loc.getName().startsWith("coast")) return loc;
+                if (loc.getName() != null && !loc.getName().startsWith("land")) return loc;
             }
             throw new IllegalArgumentException(
                     "Location is not found"
@@ -126,12 +128,27 @@ public class GameMaster {
         }
     } // ++
 
-    public void addOrder(Order order) {
-        pendingOrders.add(order);
+    public void addOrder(Order order, Player player) {
+        pendingOrdersByPlayer.computeIfAbsent(player, k -> new ArrayList<>()).add(order);
     }
 
-    public List<Order> getPendingOrders() {
-        return pendingOrders;
+    public List<Order> getPendingOrders(Player player) {
+        return pendingOrdersByPlayer.getOrDefault(player, new ArrayList<>());
+    }
+
+    public void removeOrder(Player player, int index) {
+        List<Order> orders = pendingOrdersByPlayer.get(player);
+        if (orders != null && index >= 0 && index < orders.size()) {
+            orders.remove(index);
+        }
+    }
+
+    public List<Order> getAllPendingOrders() {
+        List<Order> all = new ArrayList<>();
+        for (List<Order> orders : pendingOrdersByPlayer.values()) {
+            all.addAll(orders);
+        }
+        return all;
     }
 
     public GameMap getMap() {

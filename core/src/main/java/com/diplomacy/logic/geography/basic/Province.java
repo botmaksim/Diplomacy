@@ -2,6 +2,7 @@ package com.diplomacy.logic.geography.basic;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import com.diplomacy.logic.geography.utils.ProvinceSignature;
 import com.diplomacy.logic.geography.utils.ProvinceType;
@@ -92,5 +93,17 @@ public class Province {
 
     public void setBattled(boolean battled) {
         resolveParameters.setBattled(battled);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Province province)) return false;
+        return id.equalsIgnoreCase(province.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id.toLowerCase());
     }
 }
