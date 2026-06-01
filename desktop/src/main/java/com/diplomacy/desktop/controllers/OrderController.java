@@ -19,219 +19,257 @@ public class OrderController {
     private final ListView<String> ordersListView;
     private final OrderCreator orderCreator;
 
+    private OrderType currentOrderType;
     private Unit selectedUnit;
-    private OrderType currentOrderType;          // тип, выбранный кнопкой (не сбрасывается автоматически)
-    private OrderPrototype currentPrototype;     // временный прототип для текущего приказа
-    private boolean waitingForSupportTarget;     // для SUPPORT: ожидаем цель после выбора поддерживаемого юнита
+    private Unit supportTargetUnit;   // для поддержки: кого поддерживаем
+    private Province supportDestination; // цель атаки/удержания поддерживаемого
+    private OrderPrototype currentPrototype;
+
+    // Состояния конечного автомата
+    private enum State { IDLE, UNIT_SELECTED, SUPPORT_TARGET_SELECTED }
+    private State state = State.IDLE;
 
     public OrderController(GameMaster gm, MapView mv, ListView<String> orders) {
         this.gameMaster = gm;
         this.mapView = mv;
         this.ordersListView = orders;
         this.orderCreator = new OrderCreator();
-        this.currentPrototype = new OrderPrototype();
     }
 
-    // Вызывается из UI при нажатии кнопки типа приказа (MOVE, SUPPORT и т.д.)
-    // Устанавливает активный тип, сбрасывает ожидание и выделение юнита.
+    /**
+     * Вызывается при нажатии кнопки типа приказа.
+     * Сбрасывает всё предыдущее состояние и устанавливает новый тип.
+     */
     public void setOrderType(OrderType type) {
-        // Очищаем предыдущее состояние
-        clearSelection();
-        this.currentOrderType = type;
-        waitingForSupportTarget = false;
+        reset();
+        currentOrderType = type;
+        state = State.IDLE;
         System.out.println("[OrderController] Order type set to: " + type);
     }
 
-    // Сброс текущего приказа (очистка выбранного юнита и прототипа), но тип остается.
-    private void clearCurrentOrder() {
-        if (selectedUnit != null) {
-            mapView.highlightSelectedUnit(selectedUnit, false);
-        }
-        selectedUnit = null;
-        currentPrototype = new OrderPrototype();
-        mapView.clearHighlights();
-    }
-
-    // Полный сброс (включая тип) – вызывается при смене режима или отмене.
-    private void clearSelection() {
-        clearCurrentOrder();
-        currentOrderType = null;
-        waitingForSupportTarget = false;
-    }
-
+    /**
+     * Обработчик клика по провинции.
+     * В зависимости от состояния и типа приказа выполняет соответствующий шаг.
+     */
     public void processClick(Province clicked) {
-        System.out.println("[OrderController] processClick, currentOrderType=" + currentOrderType);
-
-        // Если тип не выбран – ничего не делаем (или можно выделять юниты без приказа?)
         if (currentOrderType == null) {
             System.out.println("[OrderController] No order type selected. Click ignored.");
             return;
         }
 
-        // Если ждём цель для поддержки – отдельная ветка
-        if (waitingForSupportTarget) {
-            completeSupportOrder(clicked);
-            return;
-        }
-
-        // Если юнит ещё не выбран – пытаемся выбрать
-        if (selectedUnit == null) {
-            handleUnitSelection(clicked);
-            return;
-        }
-
-        // Юнит выбран – обрабатываем цель в зависимости от типа
-        handleOrderTarget(clicked);
-    }
-
-    private void handleUnitSelection(Province clicked) {
-        if (clicked == null) {
-            System.out.println("[OrderController] Clicked on empty area, cannot select unit.");
-            return;
-        }
-        Unit u = clicked.getOccupyingUnit();
-        if (u == null) {
-            System.out.println("[OrderController] Province " + clicked.getName() + " is not occupied.");
-            return;
-        }
-        // Проверка принадлежности юнита текущему игроку
-        // if (!u.getOwner().equals(gameMaster.getCurrentPlayer())) {
-        //     System.out.println("[OrderController] Unit belongs to " + u.getOwner().getCountry().getName() + ", not yours.");
-        //     return;
-        // }
-        // Выбираем юнит
-        clearCurrentOrder(); // сбрасываем предыдущий незавершённый приказ
-        selectedUnit = u;
-        currentPrototype.setSelectedLocation(selectedUnit.getLocation());
-        currentPrototype.setPlayer(selectedUnit.getOwner());
-        currentPrototype.setOrderType(currentOrderType);
-        System.out.println("[OrderController] Unit selected: " + u.getTypeName() + " in " + clicked.getName());
-        mapView.highlightSelectedUnit(u, true);
-
-        // Для HOLD – сразу финализируем без выбора цели
-        if (currentOrderType == OrderType.HOLD) {
-            tryFinalizeOrder();
-        }
-        // Для MOVE, SUPPORT, CONVOY – ожидаем следующий клик (цель или поддержку)
-    }
-
-    private void handleOrderTarget(Province target) {
-        if (target == null) {
-            System.out.println("[OrderController] Target is null, cancelling order.");
-            clearCurrentOrder();
-            return;
-        }
-
         switch (currentOrderType) {
-            case MOVE -> {
-                System.out.println("[OrderController] Move destination: " + target.getName());
-                currentPrototype.setDestination(target);
-                tryFinalizeOrder();
+            case HOLD -> handleHold(clicked);
+            case MOVE -> handleMove(clicked);
+            case SUPPORT -> handleSupport(clicked);
+            default -> {
+                System.out.println("[OrderController] Unsupported order type: " + currentOrderType);
+                reset();
             }
-            case SUPPORT -> {
-                // Первый клик после выбора юнита – выбор поддерживаемого юнита
-                Unit supported = target.getOccupyingUnit();
-                if (supported == null) {
-                    System.out.println("[OrderController] No unit in " + target.getName() + " to support.");
-                    clearCurrentOrder();
+        }
+    }
+
+    // ---------- Обработчики типов приказов ----------
+
+    private void handleHold(Province clicked) {
+        if (state == State.IDLE) {
+            Unit unit = getOwnUnit(clicked);
+            if (unit == null) return;
+            selectedUnit = unit;
+            state = State.UNIT_SELECTED;
+            System.out.println("[HOLD] Unit selected: " + unit.getTypeName() + " in " + clicked.getName());
+            mapView.highlightSelectedUnit(unit, true);
+            // Сразу финализируем
+            finalizeOrder();
+        } else {
+            // Повторный клик при выбранном юните – игнорируем
+            System.out.println("[HOLD] Unit already selected, ignoring click.");
+        }
+    }
+
+    private void handleMove(Province clicked) {
+        switch (state) {
+            case IDLE -> {
+                Unit unit = getOwnUnit(clicked);
+                if (unit == null) return;
+                selectedUnit = unit;
+                state = State.UNIT_SELECTED;
+                System.out.println("[MOVE] Unit selected: " + unit.getTypeName() + " in " + clicked.getName());
+                mapView.highlightSelectedUnit(unit, true);
+                // Подсветим возможные цели (соседние провинции)
+                highlightPossibleMoves(unit);
+            }
+            case UNIT_SELECTED -> {
+                if (clicked == null || selectedUnit == null) { reset(); return; }
+                // Проверка, что цель не та же провинция (можно добавить другие проверки)
+                if (clicked.equals(selectedUnit.getLocation().getParentProvince())) {
+                    System.out.println("[MOVE] Cannot move to same province.");
                     return;
                 }
-                if (supported.getOwner().equals(selectedUnit.getOwner())) {
-                    System.out.println("[OrderController] Cannot support own unit? (разрешить?)");
+                // Установим destination в прототип и завершим приказ
+                currentPrototype = new OrderPrototype();
+                currentPrototype.setOrderType(OrderType.MOVE);
+                currentPrototype.setSelectedLocation(selectedUnit.getLocation());
+                currentPrototype.setPlayer(selectedUnit.getOwner());
+                currentPrototype.setDestination(clicked);
+                finalizeOrder();
+            }
+            default -> reset();
+        }
+    }
+
+    private void handleSupport(Province clicked) {
+        switch (state) {
+            case IDLE -> {
+                Unit unit = getOwnUnit(clicked);
+                if (unit == null) return;
+                selectedUnit = unit;
+                state = State.UNIT_SELECTED;
+                System.out.println("[SUPPORT] Supporting unit selected: " + unit.getTypeName() + " in " + clicked.getName());
+                mapView.highlightSelectedUnit(unit, true);
+                // Подсвечиваем соседей, где есть юниты (потенциальные поддерживаемые)
+                highlightSupportCandidates(unit);
+            }
+            case UNIT_SELECTED -> {
+                // Выбор поддерживаемого юнита (может быть любым, не обязательно своим)
+                Unit targetUnit = clicked == null ? null : clicked.getOccupyingUnit();
+                if (targetUnit == null) {
+                    System.out.println("[SUPPORT] No unit in " + (clicked != null ? clicked.getName() : "null") + ", cannot support.");
+                    return;
                 }
-                currentPrototype.setAdditionalUnit(supported);
-                waitingForSupportTarget = true;
-                System.out.println("[OrderController] Support target unit selected: " + supported.getTypeName() + " in " + target.getName());
-                // Подсветка возможных направлений поддержки (куда может пойти поддерживаемый юнит)
-                highlightSupportDestinations(supported);
+                if (targetUnit == selectedUnit) {
+                    System.out.println("[SUPPORT] Cannot support yourself.");
+                    return;
+                }
+                supportTargetUnit = targetUnit;
+                state = State.SUPPORT_TARGET_SELECTED;
+                System.out.println("[SUPPORT] Supported unit selected: " + targetUnit.getTypeName() + " in " + clicked.getName());
+                mapView.highlightProvince(clicked.getId(), Color.CYAN);
+                // Подсвечиваем возможные цели для поддержки (куда может пойти поддерживаемый)
+                highlightSupportDestinations(targetUnit);
             }
-            case CONVOY -> {
-                // Аналогично SUPPORT: нужен конвоируемый юнит и цель
-                // Пока заглушка
-                System.out.println("[OrderController] Convoy order not fully implemented.");
-                clearCurrentOrder();
+            case SUPPORT_TARGET_SELECTED -> {
+                // Выбор цели атаки/удержания поддерживаемого
+                if (clicked == null) {
+                    System.out.println("[SUPPORT] Destination is null, cancelling.");
+                    reset();
+                    return;
+                }
+                supportDestination = clicked;
+                // Формируем прототип
+                currentPrototype = new OrderPrototype();
+                currentPrototype.setOrderType(OrderType.SUPPORT);
+                currentPrototype.setSelectedLocation(selectedUnit.getLocation());
+                currentPrototype.setPlayer(selectedUnit.getOwner());
+                currentPrototype.setAdditionalUnit(supportTargetUnit);
+                currentPrototype.setDestination(supportDestination);
+                finalizeOrder();
             }
-            default -> {
-                System.out.println("[OrderController] Unsupported order type for target handling: " + currentOrderType);
-                clearCurrentOrder();
+            default -> reset();
+        }
+    }
+
+    // ---------- Вспомогательные методы ----------
+
+    /** Возвращает юнита в провинции, если он принадлежит текущему игроку, иначе null. */
+    private Unit getOwnUnit(Province province) {
+        if (province == null) return null;
+        Unit unit = province.getOccupyingUnit();
+        if (unit == null) return null;
+        // Для теста пока разрешаем любого, потом добавить проверку текущего игрока
+        // if (!unit.getOwner().equals(gameMaster.getCurrentPlayer())) return null;
+        return unit;
+    }
+
+    private void highlightPossibleMoves(Unit unit) {
+        for (var loc : unit.getLocation().getNeighbours()) {
+            Province p = loc.getParentProvince();
+            mapView.highlightProvince(p.getId(), Color.LIGHTGREEN);
+        }
+    }
+
+    private void highlightSupportCandidates(Unit unit) {
+        for (var loc : unit.getLocation().getNeighbours()) {
+            Province p = loc.getParentProvince();
+            if (p.isOccupied()) {
+                mapView.highlightProvince(p.getId(), Color.SKYBLUE);
             }
         }
     }
 
-    private void completeSupportOrder(Province destination) {
-        if (destination == null) {
-            System.out.println("[OrderController] Support destination is null, cancelling.");
-            clearCurrentOrder();
-            waitingForSupportTarget = false;
-            return;
-        }
-        System.out.println("[OrderController] Support destination: " + destination.getName());
-        currentPrototype.setDestination(destination);
-        tryFinalizeOrder();
-    }
-
-    private void tryFinalizeOrder() {
-        System.out.println("[OrderController] Trying to finalize order. Prototype: " + currentPrototype);
-        PhaseType phaseType = (gameMaster.getPhase() != null) ? gameMaster.turn.getPhase() : PhaseType.MOVEMENT;
-        System.out.println("[OrderController] Using phase: " + phaseType);
-
-        Order order = orderCreator.createOrder(currentPrototype, phaseType);
-        if (order != null) {
-            System.out.println("[OrderController] Order created successfully: " + order.getClass().getSimpleName());
-            gameMaster.addOrder(order);
-            ordersListView.getItems().add(formatOrderText());
-            drawArrowIfNeeded();
-        } else {
-            System.out.println("[OrderController] Failed to create order. Order was null.");
-            System.out.println("Order prototype details: orderType=" + currentPrototype.getOrderType()
-                + " location=" + (currentPrototype.getSelectedLocation() != null ? currentPrototype.getSelectedLocation().getParentProvince().getName() : "null")
-                + " destination=" + (currentPrototype.getDestination() != null ? currentPrototype.getDestination().getName() : "null")
-                + " player=" + (currentPrototype.getPlayer() != null ? currentPrototype.getPlayer().getCountry().getName() : "null")
-                + " additionalUnit=" + (currentPrototype.getAdditionalUnit() != null ? "present" : "null"));
-        }
-        // После завершения приказа очищаем текущий (юнит и прототип), но тип остаётся
-        clearCurrentOrder();
-        waitingForSupportTarget = false;
-    }
-
-    // Методы подсветки (заглушки)
     private void highlightSupportDestinations(Unit supported) {
-        // Подсвечиваем возможные цели для поддержки (куда может двигаться поддерживаемый юнит)
         for (var loc : supported.getLocation().getNeighbours()) {
             Province p = loc.getParentProvince();
             mapView.highlightProvince(p.getId(), Color.LIGHTGREEN);
         }
     }
 
-    private void drawArrowIfNeeded() {
-        if (selectedUnit != null && currentPrototype.getDestination() != null) {
-            String from = selectedUnit.getLocation().getParentProvince().getId();
-            String to = currentPrototype.getDestination().getId();
-            System.out.println("[OrderController] Drawing arrow from " + from + " to " + to);
-            mapView.drawArrow(from, to);
+    /** Финализирует приказ, создаёт его и отображает стрелки/текст. */
+    private void finalizeOrder() {
+        if (currentPrototype == null) {
+            System.out.println("[OrderController] Prototype is null, cannot finalize.");
+            reset();
+            return;
+        }
+        PhaseType phaseType = (gameMaster.getPhase() != null) ? gameMaster.turn.getPhase() : PhaseType.MOVEMENT;
+        Order order = orderCreator.createOrder(currentPrototype, phaseType);
+        if (order != null) {
+            System.out.println("[OrderController] Order created: " + order.getClass().getSimpleName());
+            gameMaster.addOrder(order);
+            ordersListView.getItems().add(formatOrderText());
+            drawArrowsForOrder();
+        } else {
+            System.out.println("[OrderController] Order creation failed.");
+        }
+        reset();
+    }
+
+    /** Рисует стрелки в зависимости от типа приказа. */
+    private void drawArrowsForOrder() {
+        if (selectedUnit == null) return;
+        String fromId = selectedUnit.getLocation().getParentProvince().getId();
+        switch (currentOrderType) {
+            case MOVE -> {
+                String toId = currentPrototype.getDestination().getId();
+                mapView.drawOrderArrow(fromId, toId, OrderType.MOVE);
+            }
+            case SUPPORT -> {
+                // Стрелка поддержки (синяя пунктирная) от поддерживающего к поддерживаемому
+                String supportedId = supportTargetUnit.getLocation().getParentProvince().getId();
+                mapView.drawSupportArrow(fromId, supportedId);
+                // Стрелка атаки (красная сплошная) от поддерживаемого к цели
+                if (supportDestination != null) {
+                    mapView.drawOrderArrow(supportedId, supportDestination.getId(), OrderType.MOVE);
+                }
+            }
+            // HOLD и другие без стрелок
         }
     }
 
     private String formatOrderText() {
         Unit u = selectedUnit;
         String base = u.getTypeName() + " в " + u.getLocation().getParentProvince().getName();
-        OrderType type = currentPrototype.getOrderType();
-        return switch (type) {
+        return switch (currentOrderType) {
             case HOLD -> base + " держит позицию";
             case MOVE -> base + " → " + currentPrototype.getDestination().getName();
             case SUPPORT -> {
-                String sup = currentPrototype.getAdditionalUnit().getTypeName() + " в " +
-                             currentPrototype.getAdditionalUnit().getLocation().getParentProvince().getName();
-                String dest = currentPrototype.getDestination() != null ?
-                              currentPrototype.getDestination().getName() : "удержание";
+                String sup = supportTargetUnit.getTypeName() + " в " +
+                             supportTargetUnit.getLocation().getParentProvince().getName();
+                String dest = supportDestination != null ?
+                              supportDestination.getName() : "удержание";
                 yield base + " поддерживает " + sup + " → " + dest;
             }
-            default -> base + " " + type;
+            default -> base + " " + currentOrderType;
         };
     }
 
-    // Методы-заглушки для подсветки (можно реализовать позже)
-    private void highlightPossibleMoves() {}
-    private void highlightSupportCandidates() {}
-    private void highlightPossibleConvoys() {}
+    /** Полный сброс состояния и подсветки. */
+    private void reset() {
+        if (selectedUnit != null) mapView.highlightSelectedUnit(selectedUnit, false);
+        selectedUnit = null;
+        supportTargetUnit = null;
+        supportDestination = null;
+        currentPrototype = null;
+        state = State.IDLE;
+        mapView.clearHighlights();
+    }
 }

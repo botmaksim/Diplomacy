@@ -8,6 +8,7 @@ import java.util.Set;
 
 import org.girod.javafx.svgimage.SVGImage;
 
+import com.diplomacy.logic.orders.utils.OrderType;
 import com.diplomacy.logic.units.Army;
 import com.diplomacy.logic.units.Unit;
 
@@ -220,48 +221,56 @@ public class MapView {
         provinceNodes.values().forEach(n -> n.setStyle(""));
     }
 
-    public void drawArrow(String fromProvinceId, String toProvinceId) {
+    public void drawOrderArrow(String fromProvinceId, String toProvinceId, OrderType type) {
         double[] from = provinceCenters.get(fromProvinceId);
         double[] to = provinceCenters.get(toProvinceId);
         if (from == null || to == null) return;
-        drawArrow(from[0], from[1], to[0], to[1]);
+
+        Color color = switch (type) {
+            case MOVE    -> Color.DARKRED;
+            case SUPPORT -> Color.DARKGREEN;
+            case CONVOY  -> Color.DARKBLUE;
+            case RETREAT -> Color.ORANGE;
+            default      -> Color.GRAY;
+        };
+
+        boolean dashed = (type == OrderType.SUPPORT);
+
+        drawArrow(from[0], from[1], to[0], to[1], color, dashed);
     }
 
-    public void drawArrow(double startX, double startY, double endX, double endY) {
-        // 1. Линия
+    public void drawSupportArrow(String fromProvinceId, String toProvinceId) {
+        double[] from = provinceCenters.get(fromProvinceId);
+        double[] to = provinceCenters.get(toProvinceId);
+        if (from == null || to == null) return;
+
+        Color color = Color.DARKBLUE;
+        boolean dashed = true;
+        drawArrow(from[0], from[1], to[0], to[1], color, dashed);
+    }
+
+    // Приватный метод drawArrow с цветом и стилем уже есть, но покажем его снова для ясности:
+    private void drawArrow(double startX, double startY, double endX, double endY,
+                        Color color, boolean dashed) {
         Line line = new Line(startX, startY, endX, endY);
-        line.setStroke(Color.DARKRED);
+        line.setStroke(color);
         line.setStrokeWidth(3);
-        
-        // 2. Наконечник (треугольник)
-        double arrowSize = 12.0;          // длина наконечника
-        double arrowWidth = 8.0;          // ширина основания
-        
-        // Вычисляем угол линии
+        if (dashed) {
+            line.getStrokeDashArray().addAll(8.0, 4.0);
+        }
+
+        double arrowSize = 12.0;
         double angle = Math.atan2(endY - startY, endX - startX);
-        
-        // Координаты основания треугольника (на конце линии)
-        double baseX = endX;
-        double baseY = endY;
-        
-        // Вершина треугольника (остриё) – можно немного отодвинуть от конца, но обычно остриё на самом конце
         double tipX = endX;
         double tipY = endY;
-        
-        // Левая и правая точки основания
-        double leftX = baseX - arrowSize * Math.cos(angle - Math.toRadians(30));
-        double leftY = baseY - arrowSize * Math.sin(angle - Math.toRadians(30));
-        double rightX = baseX - arrowSize * Math.cos(angle + Math.toRadians(30));
-        double rightY = baseY - arrowSize * Math.sin(angle + Math.toRadians(30));
-        
-        Polygon arrowHead = new Polygon(
-            tipX, tipY,
-            leftX, leftY,
-            rightX, rightY
-        );
-        arrowHead.setFill(Color.DARKRED);
-        
-        // 3. Добавляем в группу
+        double leftX = tipX - arrowSize * Math.cos(angle - Math.toRadians(30));
+        double leftY = tipY - arrowSize * Math.sin(angle - Math.toRadians(30));
+        double rightX = tipX - arrowSize * Math.cos(angle + Math.toRadians(30));
+        double rightY = tipY - arrowSize * Math.sin(angle + Math.toRadians(30));
+
+        Polygon arrowHead = new Polygon(tipX, tipY, leftX, leftY, rightX, rightY);
+        arrowHead.setFill(color);
+
         arrowGroup.getChildren().addAll(line, arrowHead);
     }
 

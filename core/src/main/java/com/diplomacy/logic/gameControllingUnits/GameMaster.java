@@ -94,8 +94,12 @@ public class GameMaster {
                 Unit unit;
                 if ("army".equalsIgnoreCase(unitType)) {
                     unit = new Army(player, location);
-                } else {
+                } else if ("fleet".equalsIgnoreCase(unitType)) {
                     unit = new Fleet(player, location);
+                } else {
+                    throw new IllegalArgumentException(
+                        "Unsupported unit type: " + unitType
+                    );
                 }
 
                 province.setOccupyingUnit(unit);
