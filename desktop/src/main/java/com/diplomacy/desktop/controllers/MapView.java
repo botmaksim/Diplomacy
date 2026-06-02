@@ -22,7 +22,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Scale;
 import javafx.scene.transform.Translate;
 
@@ -347,7 +346,7 @@ public class MapView {
 
     //     scaleTransform.setX(newScale);
     //     scaleTransform.setY(newScale);
-    //     clampTranslation();   // ← важно
+    //     clampTranslation();
     // }
 
     // public void applyPan(double dx, double dy) {

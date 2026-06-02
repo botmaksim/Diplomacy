@@ -1,22 +1,15 @@
 package com.diplomacy.logic.gameControllingUnits;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import com.diplomacy.logic.gameControllingUnits.phase.Phase;
 import com.diplomacy.logic.gameControllingUnits.utils.Executor;
-import com.diplomacy.logic.geography.advanced.Country;
 import com.diplomacy.logic.geography.advanced.GameMap;
-import com.diplomacy.logic.geography.basic.Location;
-import com.diplomacy.logic.geography.basic.Province;
 import com.diplomacy.logic.orders.Order;
 import com.diplomacy.logic.player.Player;
 import com.diplomacy.logic.save.gameHistory.History;
 import com.diplomacy.logic.turnClassificator.TurnClassificator;
-import com.diplomacy.logic.units.Army;
-import com.diplomacy.logic.units.Fleet;
 import com.diplomacy.logic.units.Unit;
 
 public class GameMaster {
@@ -27,13 +20,16 @@ public class GameMaster {
     public final GameMap map;
     public final History history;
     public final Executor executor;
-    private final Map<Player, List<Order>> pendingOrdersByPlayer = new HashMap<>();
 
     public GameMaster(List<Player> players, GameMap map, History history, Executor executor) {
         if (history != null && history.getLastTurn() != null) {
             this.turn = history.getLastTurn();
         } else {
             this.turn = new TurnClassificator();
+        }
+        this.phase = turn.getPhaseClass();
+        if (this.phase != null) {
+            this.phase.setGameMaster(this);
         }
         this.players = players;
         this.map = map;
@@ -43,6 +39,10 @@ public class GameMaster {
 
     public GameMaster(List<Player> players, GameMap map, TurnClassificator turn, Executor executor) {
         this.turn = turn;
+        this.phase = turn.getPhaseClass();
+        if (this.phase != null) {
+            this.phase.setGameMaster(this);
+        }
         this.players = players;
         this.map = map;
         this.history = new History();
@@ -57,98 +57,36 @@ public class GameMaster {
         this(players, map, new Executor());
     }
 
-    public void initializeStartPositions() {
-        for (Player p : players) {
-            p.getUnits().clear();
-        }
-        map.getProvinces().forEach(province -> 
-            province.setOccupyingUnit(null)
-        );
-
-        for (Player player : players) {
-            Country country = player.getCountry();
-            if (country == null) {
-                throw new IllegalArgumentException(
-                    "Country is not defined"
-                );
-            }
-
-            Map<Province, String> startingUnits = country.getStartingUnitTypes();
-            if (startingUnits == null || startingUnits.isEmpty()) {
-                throw new IllegalArgumentException(
-                    "Country " + country.getName() + " doesn't have starting units defined"
-                );
-            }
-
-            for (var entry : startingUnits.entrySet()) {
-                Province province = entry.getKey();
-                String unitType = entry.getValue();
-
-                if (province == null || province.getLocations().isEmpty()) {
-                    throw new IllegalArgumentException(
-                        "Province is defined with some error"
-                    );
-                }
-
-                Location location = selectStartingLocation(province, unitType);
-
-                Unit unit;
-                if ("army".equalsIgnoreCase(unitType)) {
-                    unit = new Army(player, location);
-                } else if ("fleet".equalsIgnoreCase(unitType)) {
-                    unit = new Fleet(player, location);
-                } else {
-                    throw new IllegalArgumentException(
-                        "Unsupported unit type: " + unitType
-                    );
-                }
-
-                province.setOccupyingUnit(unit);
-                player.getUnits().add(unit);
-            }
-        }
-    } // ++
-
-    private Location selectStartingLocation(Province province, String unitType) {
-        if ("army".equalsIgnoreCase(unitType)) {
-            for (Location loc : province.getLocations()) {
-                if ("land".equals(loc.getName())) return loc;
-            }
-            throw new IllegalArgumentException(
-                    "Location is not found"
-                );
-        } else {
-            for (Location loc : province.getLocations()) {
-                // if (loc.getName() != null && loc.getName().startsWith("coast")) return loc;
-                if (loc.getName() != null && !loc.getName().startsWith("land")) return loc;
-            }
-            throw new IllegalArgumentException(
-                    "Location is not found"
-                );
-        }
-    } // ++
-
     public void addOrder(Order order, Player player) {
-        pendingOrdersByPlayer.computeIfAbsent(player, k -> new ArrayList<>()).add(order);
+        if (phase != null) {
+            phase.addOrder(order, player);
+        }
     }
 
     public List<Order> getPendingOrders(Player player) {
-        return pendingOrdersByPlayer.getOrDefault(player, new ArrayList<>());
+        if (phase == null) return new ArrayList<>();
+        @SuppressWarnings("unchecked")
+        List<Order> orders = (List<Order>) phase.getOrders(player);
+        return orders;
     }
 
     public void removeOrder(Player player, int index) {
-        List<Order> orders = pendingOrdersByPlayer.get(player);
-        if (orders != null && index >= 0 && index < orders.size()) {
-            orders.remove(index);
+        if (phase != null) {
+            phase.removeOrder(player, index);
         }
     }
 
-    public List<Order> getAllPendingOrders() {
-        List<Order> all = new ArrayList<>();
-        for (List<Order> orders : pendingOrdersByPlayer.values()) {
-            all.addAll(orders);
+    public void clearAllPendingOrders() {
+        if (phase != null) {
+            phase.clearAllOrders();
         }
-        return all;
+    }
+
+    public void updatePhaseObject() {
+        this.phase = turn.getPhaseClass();
+        if (this.phase != null) {
+            this.phase.setGameMaster(this);
+        }
     }
 
     public GameMap getMap() {
@@ -172,13 +110,12 @@ public class GameMaster {
     }
 
     public boolean nextTurn() {
-        if (!phase.ableNextPhase()) {
+        if (phase == null || !phase.ableNextPhase()) {
             return false;
         }
         phase.operate();
         turn.nextTurn();
-        phase = turn.getPhaseClass();
-
+        updatePhaseObject();
         return true;
     }
 

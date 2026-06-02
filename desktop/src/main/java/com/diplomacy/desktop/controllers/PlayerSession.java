@@ -6,7 +6,6 @@ import com.diplomacy.logic.units.Army;
 import com.diplomacy.logic.units.Fleet;
 
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -61,18 +60,12 @@ public class PlayerSession {
             playerInfoLabel.setText(player.getName() + " | SC: " + sc + " | A: " + armies + " F: " + fleets);
             confirmOrdersButton.setDisable(false);
             confirmOrdersButton.setText(orderLedger.isConfirmed(player) ? "Cancel Confirmation" : "Confirm Orders");
-            for (Toggle t : orderTypeGroup.getToggles()) {
-                ((Node) t).setDisable(false);
-            }
         } else {
             currentPlayerLabel.setText("Spectator");
             loginButton.setText("Login");
             playerInfoLabel.setText("");
             confirmOrdersButton.setDisable(true);
             confirmOrdersButton.setText("Confirm Orders");
-            for (Toggle t : orderTypeGroup.getToggles()) {
-                ((Node) t).setDisable(true);
-            }
         }
         orderLedger.rebuild(player);
     }

@@ -10,18 +10,18 @@ import com.diplomacy.logic.gameControllingUnits.phase.SpawnPhase;
 
 public class TurnClassificator {
 
-    private int turnNumber;
+    private int year;
     private Season season;
     private PhaseType phase;
 
     public TurnClassificator() {
-        this.turnNumber = 1900;
+        this.year = 1900;
         this.season = Season.SPRING;
         this.phase = PhaseType.MOVEMENT;
     }
 
-    public TurnClassificator(int turnNumber, Season season, PhaseType phase) {
-        this.turnNumber = turnNumber;
+    public TurnClassificator(int year, Season season, PhaseType phase) {
+        this.year = year;
         this.season = season;
         this.phase = phase;
     }
@@ -34,8 +34,8 @@ public class TurnClassificator {
         this.season = season;
     }
 
-    public void setTurnNumber(int turnNumber) {
-        this.turnNumber = turnNumber;
+    public void setYear(int year) {
+        this.year = year;
     }
 
     public PhaseType getPhase() {
@@ -46,12 +46,27 @@ public class TurnClassificator {
         return season;
     }
 
-    public int getTurnNumber() {
-        return turnNumber;
+    public int getYear() {
+        return year;
     }
 
     public void nextTurn() {
-
+        switch (phase) {
+            case MOVEMENT -> phase = PhaseType.RETREAT;
+            case RETREAT -> {
+                if (season == Season.SPRING) {
+                    season = Season.FALL;
+                    phase = PhaseType.MOVEMENT;
+                } else {
+                    phase = PhaseType.SPAWN;
+                }
+            }
+            case SPAWN -> {
+                season = Season.SPRING;
+                year++;
+                phase = PhaseType.MOVEMENT;
+            }
+        }
     }
 
     public Phase getPhaseClass() {
@@ -68,12 +83,12 @@ public class TurnClassificator {
     }
 
     public boolean equals(TurnClassificator turn) {
-        return turnNumber == turn.getTurnNumber() && phase == turn.getPhase() && season == turn.getSeason();
+        return year == turn.getYear() && phase == turn.getPhase() && season == turn.getSeason();
     }
 
     public boolean less(TurnClassificator turn) {
-        if (turnNumber != turn.getTurnNumber()) {
-            return turnNumber < turn.getTurnNumber();
+        if (year != turn.getYear()) {
+            return year < turn.getYear();
         }
         if (season != turn.getSeason()) {
             return season == Season.SPRING;
@@ -88,5 +103,4 @@ public class TurnClassificator {
         }
         return false;
     }
-
 }

@@ -4,20 +4,23 @@ import java.util.List;
 
 import com.diplomacy.logic.gameControllingUnits.GameMaster;
 import com.diplomacy.logic.orders.Order;
+import com.diplomacy.logic.player.Player;
 
 public interface Phase {
 
-    public void setGameMaster(GameMaster gameMaster);
+    void setGameMaster(GameMaster gameMaster);
 
-    public boolean addOrder(Order order);
+    boolean addOrder(Order order, Player player);
 
-    public boolean removeOrder(int i);
+    boolean removeOrder(Player player, int index);
 
-    public boolean removeLastOrder();
+    List<? extends Order> getOrders(Player player);
 
-    public List<? extends Order> getOrders();
+    List<? extends Order> getAllOrders();
 
-    public void operate();
+    void clearAllOrders();
 
-    public boolean ableNextPhase();
+    void operate();
+
+    boolean ableNextPhase();
 }

@@ -51,7 +51,7 @@ public class OrderController {
     private void log(String message) {
         System.out.println(message);
         if (logArea != null) {
-            logArea.appendText(message + "\n");
+            logArea.setText(message);
         }
     }
 
@@ -59,7 +59,7 @@ public class OrderController {
         clearSelection();
         this.currentOrderType = type;
         waitingForSecondaryTarget = false;
-        log("[OrderController] Order type set to: " + type);
+        log("Order type set to: " + type);
     }
 
     public OrderType getCurrentOrderType() {
@@ -122,7 +122,7 @@ public class OrderController {
             dialog.showAndWait();
             return controller.getSelectedLocation();
         } catch (Exception e) {
-            log("[OrderController] Failed to load coast selection dialog: " + e.getMessage());
+            log("Failed to load coast selection dialog: " + e.getMessage());
             return null;
         }
     }
@@ -194,13 +194,13 @@ public class OrderController {
         switch (currentOrderType) {
             case SPAWN -> {
                 if (clicked.getLocations().isEmpty()) {
-                    log("[OrderController] Province " + clicked.getName() + " has no locations for spawning.");
+                    log("Province " + clicked.getName() + " has no locations for spawning.");
                     return;
                 }
                 Location loc = clicked.getLocations().get(0);
                 Player owner = findPlayerForProvince(clicked);
                 if (owner == null) {
-                    log("[OrderController] No player owns province " + clicked.getName() + " for spawning.");
+                    log("No player owns province " + clicked.getName() + " for spawning.");
                     return;
                 }
                 currentPrototype.setSelectedLocation(loc);
@@ -224,16 +224,16 @@ public class OrderController {
     private void handleUnitSelection(Province clicked) {
         Player currentPlayer = playerSession.getCurrentPlayer();
         if (clicked == null) {
-            log("[OrderController] Clicked on empty area, cannot select unit.");
+            log("Clicked on empty area, cannot select unit.");
             return;
         }
         Unit u = clicked.getOccupyingUnit();
         if (u == null) {
-            log("[OrderController] Province " + clicked.getName() + " is not occupied.");
+            log("Province " + clicked.getName() + " is not occupied.");
             return;
         }
         if (currentPlayer != null && !u.getOwner().equals(currentPlayer)) {
-            log("[OrderController] Cannot select unit of " + u.getOwner().getName() + " — you are " + currentPlayer.getName());
+            log("Cannot select unit of " + u.getOwner().getName() + " — you are " + currentPlayer.getName());
             return;
         }
         clearCurrentOrder();
@@ -241,14 +241,14 @@ public class OrderController {
         currentPrototype.setSelectedLocation(selectedUnit.getLocation());
         currentPrototype.setPlayer(selectedUnit.getOwner());
         currentPrototype.setOrderType(currentOrderType);
-        log("[OrderController] Unit selected: " + u.getTypeName() + " in " + clicked.getName());
+        log("Unit selected: " + u.getTypeName() + " in " + clicked.getName());
         mapView.highlightSelectedUnit(u, true);
     }
 
     private void handleOrderTarget(Province target) {
         Player currentPlayer = playerSession.getCurrentPlayer();
         if (target == null) {
-            log("[OrderController] Target is null, cancelling order.");
+            log("Target is null, cancelling order.");
             clearCurrentOrder();
             return;
         }
@@ -260,7 +260,7 @@ public class OrderController {
                     List<Location> coastLocs = getReachableCoastLocations(selectedUnit, target);
                     Location chosen = showCoastSelectionDialog(target, coastLocs);
                     if (chosen == null) {
-                        log("[OrderController] Coast selection cancelled for " + target.getName());
+                        log("Coast selection cancelled for " + target.getName());
                         clearCurrentOrder();
                         return;
                     }
@@ -279,38 +279,38 @@ public class OrderController {
             case SUPPORT -> {
                 Unit supported = target.getOccupyingUnit();
                 if (supported == null) {
-                    log("[OrderController] No unit in " + target.getName() + " to support.");
+                    log("No unit in " + target.getName() + " to support.");
                     clearCurrentOrder();
                     return;
                 }
                 if (currentPlayer != null && !supported.getOwner().equals(currentPlayer)) {
-                    log("[OrderController] Cannot support unit of " + supported.getOwner().getName() + " — you are " + currentPlayer.getName());
+                    log("Cannot support unit of " + supported.getOwner().getName() + " — you are " + currentPlayer.getName());
                     clearCurrentOrder();
                     return;
                 }
                 currentPrototype.setAdditionalUnit(supported);
                 waitingForSecondaryTarget = true;
-                log("[OrderController] Support target unit selected: " + supported.getTypeName() + " in " + target.getName());
+                log("Support target unit selected: " + supported.getTypeName() + " in " + target.getName());
                 highlightSupportDestinations(supported);
             }
             case CONVOY -> {
                 Unit armyToConvoy = target.getOccupyingUnit();
                 if (armyToConvoy == null) {
-                    log("[OrderController] No unit in " + target.getName() + " to convoy.");
+                    log("No unit in " + target.getName() + " to convoy.");
                     clearCurrentOrder();
                     return;
                 }
                 if (currentPlayer != null && !armyToConvoy.getOwner().equals(currentPlayer)) {
-                    log("[OrderController] Cannot convoy unit of " + armyToConvoy.getOwner().getName() + " — you are " + currentPlayer.getName());
+                    log("Cannot convoy unit of " + armyToConvoy.getOwner().getName() + " — you are " + currentPlayer.getName());
                     clearCurrentOrder();
                     return;
                 }
                 currentPrototype.setAdditionalUnit(armyToConvoy);
                 waitingForSecondaryTarget = true;
-                log("[OrderController] Convoy army selected: " + armyToConvoy.getTypeName() + " in " + target.getName());
+                log("Convoy army selected: " + armyToConvoy.getTypeName() + " in " + target.getName());
             }
             default -> {
-                log("[OrderController] Unsupported order type: " + currentOrderType);
+                log("Unsupported order type: " + currentOrderType);
                 clearCurrentOrder();
             }
         }
@@ -318,12 +318,12 @@ public class OrderController {
 
     private void completeSecondaryOrder(Province destination) {
         if (destination == null) {
-            log("[OrderController] Secondary target is null, cancelling.");
+            log("Secondary target is null, cancelling.");
             clearCurrentOrder();
             waitingForSecondaryTarget = false;
             return;
         }
-        log("[OrderController] Secondary target: " + destination.getName());
+        log("Secondary target: " + destination.getName());
         currentPrototype.setDestination(destination);
         tryFinalizeOrder();
     }
@@ -343,7 +343,7 @@ public class OrderController {
 
         VerificationResult verification = orderCreator.verifyOrder(currentPrototype, phaseType);
         if (verification != VerificationResult.OK) {
-            log("[OrderController] Order verification failed: " + verification);
+            log("Order verification failed: " + verification);
             clearCurrentOrder();
             waitingForSecondaryTarget = false;
             return;
@@ -354,11 +354,11 @@ public class OrderController {
             if (selectedUnit != null) {
                 orderLedger.removeExistingOrdersForUnit(selectedUnit, currentPlayer);
             }
-            log("[OrderController] Order created: " + order.getClass().getSimpleName());
+            log("Order created: " + order.getClass().getSimpleName());
             orderLedger.addOrder(order, currentPlayer);
             orderLedger.rebuild(currentPlayer);
         } else {
-            log("[OrderController] Failed to create order.");
+            log("Failed to create order.");
             log("  orderType=" + currentPrototype.getOrderType()
                 + " location=" + (currentPrototype.getSelectedLocation() != null ? currentPrototype.getSelectedLocation().getParentProvince().getName() : "null")
                 + " destination=" + (currentPrototype.getDestination() != null ? currentPrototype.getDestination().getName() : "null")

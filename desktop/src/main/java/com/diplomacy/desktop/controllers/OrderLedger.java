@@ -60,6 +60,11 @@ public class OrderLedger {
         confirmedPlayers.remove(player);
     }
 
+    public void clearAll() {
+        confirmedPlayers.clear();
+        gameMaster.clearAllPendingOrders();
+    }
+
     public void removeExistingOrdersForUnit(Unit unit, Player player) {
         List<Order> pending = gameMaster.getPendingOrders(player);
         pending.removeIf(o -> {

@@ -1,6 +1,9 @@
 package com.diplomacy.logic.gameControllingUnits.phase;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.diplomacy.logic.gameControllingUnits.GameMaster;
 import com.diplomacy.logic.gameControllingUnits.utils.Resolver;
@@ -11,6 +14,7 @@ import com.diplomacy.logic.orders.RetreatPhaseOrder;
 import com.diplomacy.logic.orders.movementPhaseOrders.BeConvoyedOrder;
 import com.diplomacy.logic.orders.movementPhaseOrders.MoveOrder;
 import com.diplomacy.logic.orders.retreatPhaseOrders.RetreatOrder;
+import com.diplomacy.logic.player.Player;
 import com.diplomacy.logic.save.gameHistory.History;
 import com.diplomacy.logic.save.gameHistory.HistoryPhase;
 import com.diplomacy.logic.turnClassificator.PhaseType;
@@ -19,7 +23,7 @@ import com.diplomacy.logic.turnClassificator.TurnClassificator;
 public class RetreatPhase implements Phase {
 
     public GameMaster gameMaster;
-    public List<RetreatPhaseOrder> orders;
+    private final Map<Player, List<RetreatPhaseOrder>> ordersByPlayer = new HashMap<>();
 
     @Override
     public void setGameMaster(GameMaster gameMaster) {
@@ -27,15 +31,16 @@ public class RetreatPhase implements Phase {
     }
 
     @Override
-    public boolean addOrder(Order order) {
+    public boolean addOrder(Order order, Player player) {
         History history = gameMaster.getHistory();
         TurnClassificator turn = gameMaster.getTurn();
         turn.setPhase(PhaseType.MOVEMENT);
-        List<MovementPhaseOrder> movementOrders = history.getHistoryPhase(turn).getOrders().stream().filter(MovementPhaseOrder.class::isInstance).map(MovementPhaseOrder.class::cast).toList();
+        List<MovementPhaseOrder> movementOrders = history.getHistoryPhase(turn).getOrders()
+            .stream().filter(MovementPhaseOrder.class::isInstance).map(MovementPhaseOrder.class::cast).toList();
         turn.setPhase(PhaseType.RETREAT);
 
         if (order instanceof RetreatOrder r) {
-            for (RetreatPhaseOrder o : orders) {
+            for (RetreatPhaseOrder o : getAllOrdersList()) {
                 if (o.getTarget() == r.getTarget()) {
                     return false;
                 }
@@ -52,47 +57,54 @@ public class RetreatPhase implements Phase {
                     }
                 }
             }
-            orders.add(r);
+            ordersByPlayer.computeIfAbsent(player, k -> new ArrayList<>()).add(r);
             return true;
         }
         return false;
     }
 
     @Override
-    public List<RetreatPhaseOrder> getOrders() {
-        return orders;
+    public List<RetreatPhaseOrder> getOrders(Player player) {
+        return ordersByPlayer.getOrDefault(player, new ArrayList<>());
     }
 
     @Override
-    public boolean removeLastOrder() {
-        if (orders.isEmpty()) {
+    public List<RetreatPhaseOrder> getAllOrders() {
+        return getAllOrdersList();
+    }
+
+    private List<RetreatPhaseOrder> getAllOrdersList() {
+        return ordersByPlayer.values().stream().flatMap(List::stream).toList();
+    }
+
+    @Override
+    public boolean removeOrder(Player player, int index) {
+        List<RetreatPhaseOrder> playerOrders = ordersByPlayer.get(player);
+        if (playerOrders == null || index < 0 || index >= playerOrders.size()) {
             return false;
         }
-        orders.removeLast();
+        playerOrders.remove(index);
         return true;
     }
 
     @Override
-    public boolean removeOrder(int i) {
-        if (i < 0 || i >= orders.size()) {
-            return false;
-        }
-        orders.remove(i);
-        return true;
+    public void clearAllOrders() {
+        ordersByPlayer.clear();
     }
 
     @Override
     public void operate() {
+        List<RetreatPhaseOrder> allOrders = getAllOrdersList();
         Resolver r = new Resolver();
-        r.resolveRetreats(orders, gameMaster);
+        r.resolveRetreats(allOrders, gameMaster);
 
-        gameMaster.getHistory().addHistoryPhase(new HistoryPhase(gameMaster.getTurn(), orders));
+        gameMaster.getHistory().addHistoryPhase(new HistoryPhase(gameMaster.getTurn(), allOrders));
 
         SupplyCentersReallocator reallocator = new SupplyCentersReallocator();
-        reallocator.reallocateSupplyCentersRetreat(orders);
+        reallocator.reallocateSupplyCentersRetreat(allOrders);
 
-        gameMaster.getExecutor().executeRetreats(orders, gameMaster);
-        gameMaster.getExecutor().executeRetreats(orders, gameMaster);
+        gameMaster.getExecutor().executeRetreats(allOrders, gameMaster);
+        gameMaster.getExecutor().executeRetreats(allOrders, gameMaster);
 
         gameMaster.getMap().resetBattleFlags();
     }
@@ -101,5 +113,4 @@ public class RetreatPhase implements Phase {
     public boolean ableNextPhase() {
         return true;
     }
-
 }

@@ -1,7 +1,6 @@
 package com.diplomacy.logic.save;
 
 import java.util.List;
-import java.util.Map;
 
 import com.diplomacy.logic.geography.advanced.GameMap;
 import com.diplomacy.logic.player.Player;

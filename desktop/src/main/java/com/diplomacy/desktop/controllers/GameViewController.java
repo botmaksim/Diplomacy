@@ -10,12 +10,16 @@ import org.girod.javafx.svgimage.SVGImage;
 import org.girod.javafx.svgimage.SVGLoader;
 
 import com.diplomacy.logic.gameControllingUnits.GameMaster;
+import com.diplomacy.logic.gameControllingUnits.utils.GameInitializer;
 import com.diplomacy.logic.gameControllingUnits.utils.MapLoader;
 import com.diplomacy.logic.geography.advanced.GameMap;
 import com.diplomacy.logic.geography.basic.Province;
 import com.diplomacy.logic.orders.utils.OrderType;
 import com.diplomacy.logic.player.Password;
 import com.diplomacy.logic.player.Player;
+import com.diplomacy.logic.turnClassificator.PhaseType;
+import com.diplomacy.logic.turnClassificator.Season;
+import com.diplomacy.logic.turnClassificator.TurnClassificator;
 import com.diplomacy.logic.units.Unit;
 
 import javafx.fxml.FXML;
@@ -31,7 +35,9 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
 
 public class GameViewController {
@@ -40,11 +46,15 @@ public class GameViewController {
     @FXML private ListView<String> ordersListView;
     @FXML private ToggleGroup orderTypeGroup;
     @FXML private TextArea logTextArea;
+    @FXML private Label turnLabel;
+    @FXML private Label phaseLabel;
     @FXML private Label currentPlayerLabel;
     @FXML private Label playerInfoLabel;
     @FXML private Button loginButton;
     @FXML private Button spectatorButton;
     @FXML private Button confirmOrdersButton;
+    @FXML private Button nextPhaseButton;
+    @FXML private VBox orderButtonsContainer;
 
     private GameMaster gameMaster;
     private MapView mapView;
@@ -72,7 +82,7 @@ public class GameViewController {
         System.out.println("Players created.");
 
         gameMaster = new GameMaster(players, gameMap, null);
-        gameMaster.initializeStartPositions();
+        GameInitializer.initializeStartPositions(gameMaster);
         System.out.println("GameMaster initialized.");
 
         Map<String, Map<String, Object>> rawUi = MapLoader.loadUiData();
@@ -109,6 +119,8 @@ public class GameViewController {
         setupOrderListDelete();
 
         playerSession.enterSpectatorMode();
+        refreshOrderTypeButtonStates();
+        updatePhaseDisplay();
 
         orderTypeGroup.selectedToggleProperty().addListener((obs, oldToggle, newToggle) -> {
             Player cp = playerSession.getCurrentPlayer();
@@ -128,7 +140,7 @@ public class GameViewController {
             orderController.setOrderType(parseOrderType(text));
         });
 
-        System.out.println("=== initialize END ===");
+        System.out.println("initialize END");
     }
 
     private void setupOrderListDelete() {
@@ -146,11 +158,13 @@ public class GameViewController {
     @FXML
     private void onSpectatorClick() {
         playerSession.enterSpectatorMode();
+        refreshOrderTypeButtonStates();
     }
 
     @FXML
     private void onLoginClick() {
         playerSession.showLoginDialog(mapContainer.getScene().getWindow());
+        refreshOrderTypeButtonStates();
     }
 
     private OrderType parseOrderType(String text) {
@@ -224,6 +238,81 @@ public class GameViewController {
             }
         }
         return result;
+    }
+
+    @FXML
+    private void onNextPhaseClick() {
+        advancePhase();
+        orderLedger.clearAll();
+        orderController.clearSelection();
+        playerSession.updateConfirmButton();
+        orderLedger.rebuild(playerSession.getCurrentPlayer());
+        selectNoneRadioButton();
+        updatePhaseDisplay();
+        refreshOrderTypeButtonStates();
+    }
+
+    private void advancePhase() {
+        gameMaster.getTurn().nextTurn();
+        gameMaster.updatePhaseObject();
+    }
+
+    private void updatePhaseDisplay() {
+        TurnClassificator turn = gameMaster.getTurn();
+        String seasonStr = turn.getSeason() == Season.SPRING ? "Spring" : "Fall";
+        turnLabel.setText(seasonStr + " " + turn.getYear());
+
+        String phaseText = switch (turn.getPhase()) {
+            case MOVEMENT -> "Order Phase";
+            case RETREAT -> "Retreat Phase";
+            case SPAWN -> "Spawn Phase";
+        };
+        phaseLabel.setText(phaseText);
+    }
+
+    private void refreshOrderTypeButtonStates() {
+        orderButtonsContainer.getChildren().clear();
+
+        Player player = playerSession.getCurrentPlayer();
+        if (player == null) {
+            return;
+        }
+
+        PhaseType phase = gameMaster.getTurn().getPhase();
+        List<List<String>> rows = switch (phase) {
+            case MOVEMENT -> List.of(
+                List.of("None", "Hold", "Move"),
+                List.of("Support", "Convoy", "BeConvoyed")
+            );
+            case RETREAT -> List.of(
+                List.of("None", "Retreat", "Die")
+            );
+            case SPAWN -> List.of(
+                List.of("None", "Spawn", "Dismiss")
+            );
+        };
+
+        for (List<String> row : rows) {
+            HBox hbox = new HBox(5);
+            for (String text : row) {
+                RadioButton rb = new RadioButton(text);
+                rb.setToggleGroup(orderTypeGroup);
+                if ("None".equals(text)) {
+                    rb.setSelected(true);
+                }
+                hbox.getChildren().add(rb);
+            }
+            orderButtonsContainer.getChildren().add(hbox);
+        }
+    }
+
+    private void selectNoneRadioButton() {
+        for (Toggle t : orderTypeGroup.getToggles()) {
+            if ("None".equals(((RadioButton) t).getText())) {
+                orderTypeGroup.selectToggle(t);
+                break;
+            }
+        }
     }
 
     @FXML private void onConfirmOrdersClick() {
