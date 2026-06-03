@@ -128,6 +128,14 @@ public class OrderController {
     }
 
     public void processClick(Province clicked) {
+        if (!waitingForSecondaryTarget && currentOrderType == null) {
+            mapView.clearHighlights();
+            if (clicked != null) {
+                mapView.highlightProvince(clicked.getId(), Color.LIGHTBLUE);
+                log("Province clicked: " + clicked.getName());
+            }
+        }
+
         Player currentPlayer = playerSession.getCurrentPlayer();
         if (currentPlayer == null || orderLedger.isConfirmed(currentPlayer)) {
             return;
@@ -243,6 +251,7 @@ public class OrderController {
         currentPrototype.setOrderType(currentOrderType);
         log("Unit selected: " + u.getTypeName() + " in " + clicked.getName());
         mapView.highlightSelectedUnit(u, true);
+        mapView.highlightProvince(clicked.getId(), Color.LIGHTBLUE);
     }
 
     private void handleOrderTarget(Province target) {

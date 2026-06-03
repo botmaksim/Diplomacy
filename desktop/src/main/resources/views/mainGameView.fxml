@@ -12,13 +12,13 @@
 <?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
 <BorderPane id="rootPane" fx:id="rootPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.diplomacy.desktop.controllers.GameViewController">
    <center>
-      <StackPane fx:id="mapContainer" minHeight="0.0" minWidth="0.0" BorderPane.alignment="CENTER" />
+      <Pane fx:id="mapContainer" minHeight="0.0" minWidth="0.0" BorderPane.alignment="CENTER" />
    </center>
    <right>
       <VBox prefHeight="200.0" prefWidth="330.0" spacing="10.0" BorderPane.alignment="CENTER">

@@ -36,13 +36,13 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
 
 public class GameViewController {
 
-    @FXML private StackPane mapContainer;
+    @FXML private Pane mapContainer;
     @FXML private ListView<String> ordersListView;
     @FXML private ToggleGroup orderTypeGroup;
     @FXML private TextArea logTextArea;

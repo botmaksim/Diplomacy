@@ -21,9 +21,9 @@ public class DesktopLauncher extends Application {
         stage.setScene(new Scene(root));
         stage.setTitle("Diplomacy");
 
-        stage.setWidth(929);
-        stage.setHeight(647);
-        stage.setResizable(false);
+        stage.setWidth(1280);
+        stage.setHeight(800);
+        stage.setResizable(true);
 
         stage.show();
     }

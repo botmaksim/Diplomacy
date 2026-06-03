@@ -76,8 +76,7 @@ public class MapView {
 
         double scaleX = containerWidth / mapWidth;
         double scaleY = containerHeight / mapHeight;
-
-        double scale = Math.max(scaleX, scaleY);
+        double scale = Math.min(scaleX, scaleY);
 
         scaleTransform.setX(scale);
         scaleTransform.setY(scale);
