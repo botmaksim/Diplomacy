@@ -37,8 +37,50 @@ public class BattleGraph {
     }
 
     public List<Location> getExecutableOrders() {
-        return List.of();
-        // Zagluska
+        List<Location> executable = new ArrayList<>();
+        Map<Location, Integer> state = new HashMap<>();
+        for (Location v : vertices) {
+            state.put(v, 0);
+        }
+
+        for (Location v : vertices) {
+            if (state.get(v) == 0) {
+                dfs(v, state, new ArrayList<>(), executable);
+            }
+        }
+        return executable;
+    }
+
+    private void dfs(Location current, Map<Location, Integer> state, List<Location> path, List<Location> executable) {
+        state.put(current, 1);
+        path.add(current);
+
+        Location next = edges.get(current);
+        if (next != null) {
+            if (state.getOrDefault(next, 0) == 1) {
+                int idx = path.indexOf(next);
+                List<Location> cycle = path.subList(idx, path.size());
+                
+                boolean cycleValid = true;
+                for (Location loc : cycle) {
+                    Location target = edges.get(loc);
+                    int p = power.getOrDefault(loc, 0);
+                    int d = def.getOrDefault(target, 0);
+                    if (p <= d) {
+                        cycleValid = false;
+                        break;
+                    }
+                }
+                if (cycleValid) {
+                    executable.addAll(cycle);
+                }
+            } else if (state.getOrDefault(next, 0) == 0) {
+                dfs(next, state, path, executable);
+            }
+        }
+
+        path.remove(path.size() - 1);
+        state.put(current, 2);
     }
 
     public Map<Location, Integer> getPower() {

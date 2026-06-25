@@ -39,7 +39,7 @@ public class Resolver {
                 }
             } else if (retreats.size() == 1) {
                 RetreatOrder r = retreats.get(0);
-                if (dest.isBattled()) {
+                if (dest.isBattled() || dest.isOccupied()) {
                     r.setExecutable(false);
                 } else {
                     r.setExecutable(true);

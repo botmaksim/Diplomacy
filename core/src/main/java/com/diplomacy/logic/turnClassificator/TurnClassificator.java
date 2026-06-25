@@ -93,14 +93,6 @@ public class TurnClassificator {
         if (season != turn.getSeason()) {
             return season == Season.SPRING;
         }
-        for (PhaseType pt : Stream.of(PhaseType.values()).collect(Collectors.toList())) {
-            if (turn.getPhase() == pt) {
-                return false;
-            }
-            if (phase == pt) {
-                return true;
-            }
-        }
-        return false;
+        return phase.ordinal() < turn.getPhase().ordinal();
     }
 }

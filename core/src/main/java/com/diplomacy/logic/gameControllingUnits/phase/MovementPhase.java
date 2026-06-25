@@ -82,8 +82,7 @@ public class MovementPhase implements Phase {
         Resolver r = new Resolver();
         r.resolveMovements(allOrders, gameMaster);
 
-        SupplyCentersReallocator reallocator = new SupplyCentersReallocator();
-        reallocator.reallocateSupplyCentersMovement(allOrders);
+
 
         gameMaster.getHistory().addHistoryPhase(new HistoryPhase(gameMaster.getTurn(), allOrders));
         gameMaster.getExecutor().beginExecuteMovements(allOrders, gameMaster);
@@ -106,8 +105,10 @@ public class MovementPhase implements Phase {
                 return false;
             }
             MovementPhaseOrder o = targetOrder.get(s.getSupportedUnit());
-            if (o instanceof ConvoyOrder || o instanceof SupportOrder) {
-                return false;
+            if (o instanceof com.diplomacy.logic.orders.movementPhaseOrders.HoldOrder || o instanceof ConvoyOrder || o instanceof SupportOrder) {
+                if (!s.getSupportedUnit().equals(s.getDestination())) {
+                    return false;
+                }
             }
         }
         return true;

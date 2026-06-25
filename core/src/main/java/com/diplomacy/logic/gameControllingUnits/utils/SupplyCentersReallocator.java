@@ -15,33 +15,21 @@ public class SupplyCentersReallocator {
     public SupplyCentersReallocator() {
     }
 
-    public void reallocateSupplyCentersMovement(List<MovementPhaseOrder> orders) {
-        for (Order o : orders) {
-            if (o.isExecutable() && o instanceof MoveOrder m) {
-                if (m.getDestination().getParentProvince().isSupplyCenter()) {
-                    Unit u = m.getTarget().getParentProvince().getOccupyingUnit();
-                    u.getOwner().getSupplyCenters().add(u.getLocation().getParentProvince());
-                }
-            }
-
-            if (o.isExecutable() && o instanceof BeConvoyedOrder bc) {
-                if (bc.getDestination().getParentProvince().isSupplyCenter()) {
-                    Unit u = bc.getTarget().getParentProvince().getOccupyingUnit();
-                    u.getOwner().getSupplyCenters().add(u.getLocation().getParentProvince());
-                }
-            }
+    public void reallocateSupplyCenters(GameMaster gameMaster) {
+        if (gameMaster.getTurn().getSeason() != com.diplomacy.logic.turnClassificator.Season.FALL) {
+            return;
         }
-    }
 
-    public void reallocateSupplyCentersRetreat(List<RetreatPhaseOrder> orders) {
-        for (Order o : orders) {
-            if (o.isExecutable() && o instanceof RetreatOrder r) {
-                if (r.getDestination().getParentProvince().isSupplyCenter()) {
-                    Unit u = r.getTarget().getParentProvince().getOccupyingUnit();
-                    u.getOwner().getSupplyCenters().add(u.getLocation().getParentProvince());
+        for (com.diplomacy.logic.player.Player player : gameMaster.getPlayers()) {
+            for (Unit u : player.getUnits()) {
+                com.diplomacy.logic.geography.basic.Province p = u.getLocation().getParentProvince();
+                if (p.isSupplyCenter()) {
+                    for (com.diplomacy.logic.player.Player other : gameMaster.getPlayers()) {
+                        other.getSupplyCenters().remove(p);
+                    }
+                    player.getSupplyCenters().add(p);
                 }
             }
-
         }
     }
 }

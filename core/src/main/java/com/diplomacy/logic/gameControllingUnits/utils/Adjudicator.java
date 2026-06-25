@@ -16,6 +16,8 @@ import com.diplomacy.logic.orders.movementPhaseOrders.HoldOrder;
 import com.diplomacy.logic.orders.movementPhaseOrders.MoveOrder;
 import com.diplomacy.logic.orders.movementPhaseOrders.SupportOrder;
 import com.diplomacy.logic.units.Unit;
+import com.diplomacy.logic.units.Army;
+import com.diplomacy.logic.units.utils.ConvoyHelper;
 
 public class Adjudicator {
 
@@ -127,6 +129,14 @@ public class Adjudicator {
                 statusMap.put(o, Status.FAILS);
             }
         }
+        for (MovementPhaseOrder o : allOrders) {
+            if (statusMap.get(o) == Status.FAILS && o instanceof MoveOrder) {
+                Province dest = getDest(o);
+                if (dest != null) {
+                    dest.setBattled(true);
+                }
+            }
+        }
 
         // Apply successes to original orders list
         for (MovementPhaseOrder o : orders) {
@@ -175,7 +185,12 @@ public class Adjudicator {
     }
 
     private boolean hasValidConvoyPath(BeConvoyedOrder bc) {
-        return true;
+        ConvoyHelper helper = new ConvoyHelper();
+        Unit u = bc.getTarget().getParentProvince().getOccupyingUnit();
+        if (u instanceof Army army) {
+            return helper.CanConvoy(army.getLocation(), bc.getDestination().getParentProvince(), army);
+        }
+        return false;
     }
 
     private boolean isDislodged(MovementPhaseOrder o) {
@@ -210,8 +225,8 @@ public class Adjudicator {
                 continue;
             }
 
-            if (attacker instanceof BeConvoyedOrder bc && statusMap.get(bc) != Status.SUCCESS) {
-                if (statusMap.get(bc) != Status.SUCCESS) {
+            if (attacker instanceof BeConvoyedOrder bc) {
+                if (statusMap.get(bc) == Status.FAILS) {
                     continue;
                 }
             }
