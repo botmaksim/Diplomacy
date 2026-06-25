@@ -34,10 +34,8 @@ public class RetreatPhase implements Phase {
     public boolean addOrder(Order order, Player player) {
         History history = gameMaster.getHistory();
         TurnClassificator turn = gameMaster.getTurn();
-        turn.setPhase(PhaseType.MOVEMENT);
-        List<MovementPhaseOrder> movementOrders = history.getHistoryPhase(turn).getOrders()
+        List<MovementPhaseOrder> movementOrders = history.getHistoryPhase(turn.getYear(), turn.getSeason(), PhaseType.MOVEMENT).getOrders()
             .stream().filter(MovementPhaseOrder.class::isInstance).map(MovementPhaseOrder.class::cast).toList();
-        turn.setPhase(PhaseType.RETREAT);
 
         if (order instanceof RetreatOrder r) {
             for (RetreatPhaseOrder o : getAllOrdersList()) {
@@ -101,9 +99,8 @@ public class RetreatPhase implements Phase {
         gameMaster.getHistory().addHistoryPhase(new HistoryPhase(gameMaster.getTurn(), allOrders));
 
         SupplyCentersReallocator reallocator = new SupplyCentersReallocator();
-        reallocator.reallocateSupplyCentersRetreat(allOrders);
+        reallocator.reallocateSupplyCenters(gameMaster);
 
-        gameMaster.getExecutor().executeRetreats(allOrders, gameMaster);
         gameMaster.getExecutor().executeRetreats(allOrders, gameMaster);
 
         gameMaster.getMap().resetBattleFlags();

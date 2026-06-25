@@ -53,6 +53,11 @@ public class History {
         return null;
     }
 
+    public HistoryPhase getHistoryPhase(int year, com.diplomacy.logic.turnClassificator.Season season, com.diplomacy.logic.turnClassificator.PhaseType phaseType) {
+        TurnClassificator dummy = new TurnClassificator(year, season, phaseType);
+        return getHistoryPhase(dummy);
+    }
+
     public TurnClassificator getLastTurn() {
         if (history == null || history.isEmpty())
             return null;

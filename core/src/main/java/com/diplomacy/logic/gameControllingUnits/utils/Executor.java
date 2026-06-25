@@ -1,5 +1,6 @@
 package com.diplomacy.logic.gameControllingUnits.utils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.diplomacy.logic.gameControllingUnits.GameMaster;
@@ -21,7 +22,7 @@ import com.diplomacy.logic.units.Unit;
 
 public class Executor {
 
-    List<UnfinishedMoveOrder> unfinished;
+    List<UnfinishedMoveOrder> unfinished = new ArrayList<>();
 
     public Executor() {
     }
